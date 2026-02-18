@@ -35,10 +35,10 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
         <div className={`zara-menu-overlay ${isOpen ? 'open' : ''}`}>
             <div className="zara-menu-container">
                 <div className="zara-menu-header">
-                    <div className="zara-logo-large">STENNA</div>
-                    <button className="zara-close-btn" onClick={onClose}>
-                        <X size={32} strokeWidth={1} />
+                    <button className="zara-close-btn" onClick={onClose} style={{ padding: '0', marginLeft: '-8px' }}>
+                        <X size={48} strokeWidth={1} />
                     </button>
+                    <div className="zara-logo-large">STENNA</div>
                 </div>
 
                 <div className="zara-menu-content">
@@ -130,8 +130,8 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

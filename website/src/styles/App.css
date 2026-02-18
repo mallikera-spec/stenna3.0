@@ -21,7 +21,7 @@ main,
 
 .nav-container {
   width: 100%;
-  padding: 0 5%;
+  padding: 1.5rem 5% 0 5%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -35,13 +35,12 @@ main,
   border: none;
   color: #000;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0;
   z-index: 1001;
-  transition: transform 0.2s ease;
 }
 
 .mobile-menu-toggle:hover {
-  transform: scale(1.1);
+  opacity: 0.6;
 }
 
 .navbar {
@@ -934,7 +933,7 @@ main,
 }
 
 .zara-menu-container {
-  padding: 2rem 5%;
+  padding: 0 5%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -942,9 +941,10 @@ main,
 
 .zara-menu-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 4rem;
+  height: calc(var(--navbar-height) + 1.5rem);
+  align-items: center;
+  padding-top: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .zara-logo-large {

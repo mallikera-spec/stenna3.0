@@ -47,13 +47,13 @@ function Navbar() {
     <>
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
-          <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)}>
-            <Menu size={24} />
+          <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0', marginLeft: '-8px' }}>
+            <Menu size={48} strokeWidth={1} />
           </button>
 
-          <div className="logo">
+          {/* <div className="logo">
             <Link to="/" onClick={() => setIsMenuOpen(false)}>STENNA</Link>
-          </div>
+          </div> */}
 
           <div className="nav-links desktop-only">
             {/* Keeping some minimal links or just icons for a Zara feel */}

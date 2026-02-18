@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
+import { Sparkles, Layout, Search, User } from 'lucide-react';
 import '../styles/App.css';
+import '../styles/CatalogLayout.css';
 import { fetchGroups, fetchCategories, fetchWallpapers } from '../services/api';
 import GroupList from '../components/GroupList';
 import CategoryList from '../components/CategoryList';
 import WallpaperList from '../components/WallpaperList';
-import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Catalog = () => {
+    const { user } = useAuth();
     const [searchParams] = useSearchParams();
     const [groups, setGroups] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -17,6 +20,7 @@ const Catalog = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [loading, setLoading] = useState(true);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // Initial load for groups
     useEffect(() => {
@@ -36,17 +40,11 @@ const Catalog = () => {
         const groupParam = searchParams.get('group');
         const catParam = searchParams.get('category');
 
-        if (groupParam) {
-            setSelectedGroupIds([groupParam]);
-        } else {
-            setSelectedGroupIds([]);
-        }
+        if (groupParam) setSelectedGroupIds([groupParam]);
+        else setSelectedGroupIds([]);
 
-        if (catParam) {
-            setSelectedCategoryIds([catParam]);
-        } else {
-            setSelectedCategoryIds([]);
-        }
+        if (catParam) setSelectedCategoryIds([catParam]);
+        else setSelectedCategoryIds([]);
     }, [searchParams]);
 
     // Handle search debounce
@@ -61,7 +59,6 @@ const Catalog = () => {
         const loadFilteredData = async () => {
             setLoading(true);
             try {
-                // Fetch categories based on active groups
                 if (selectedGroupIds.length > 0) {
                     const catsPromises = selectedGroupIds.map(id => fetchCategories(id));
                     const catsArrays = await Promise.all(catsPromises);
@@ -96,7 +93,7 @@ const Catalog = () => {
         setSelectedGroupIds(prev =>
             prev.includes(groupId) ? prev.filter(id => id !== groupId) : [...prev, groupId]
         );
-        setSelectedCategoryIds([]); // Reset categories when groups change
+        setSelectedCategoryIds([]);
     };
 
     const handleToggleCategory = (categoryId) => {
@@ -109,38 +106,30 @@ const Catalog = () => {
         );
     };
 
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
-
     return (
         <div className="catalog-page fade-in-up">
-            {/* Filter Overlay */}
-            <div
-                className={`filter-overlay ${isFilterOpen ? 'open' : ''}`}
-                onClick={() => setIsFilterOpen(false)}
-            ></div>
-
-            {/* Filter Drawer */}
+            {/* Filter Overlay & Drawer */}
+            <div className={`filter-overlay ${isFilterOpen ? 'open' : ''}`} onClick={() => setIsFilterOpen(false)}></div>
             <div className={`filter-drawer ${isFilterOpen ? 'open' : ''}`}>
                 <div className="filter-header">
                     <button className="btn-close-filter" onClick={() => setIsFilterOpen(false)}>&times;</button>
+                    <h2 className="zara-label">FILTERS</h2>
                 </div>
 
                 <div className="filter-content-scroll" style={{ flex: 1, overflowY: 'auto' }}>
                     <div className="filter-section">
-                        <GroupList
-                            groups={groups}
-                            selectedGroupIds={selectedGroupIds}
-                            onToggleGroup={handleToggleGroup}
-                        />
+                        <GroupList groups={groups} selectedGroupIds={selectedGroupIds} onToggleGroup={handleToggleGroup} />
                     </div>
-
                     <div className="filter-section" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '2rem' }}>
-                        <CategoryList
-                            categories={categories}
-                            selectedCategoryIds={selectedCategoryIds}
-                            onToggleCategory={handleToggleCategory}
-                        />
+                        <CategoryList categories={categories} selectedCategoryIds={selectedCategoryIds} onToggleCategory={handleToggleCategory} />
                     </div>
+                </div>
+
+                {/* Pagination at the bottom of the tool panel */}
+                <div className="pagination-container-drawer">
+                    <button className="page-dot active"></button>
+                    <button className="page-dot"></button>
+                    <button className="page-dot"></button>
                 </div>
 
                 <button className="btn-view-results" onClick={() => setIsFilterOpen(false)}>
@@ -148,31 +137,45 @@ const Catalog = () => {
                 </button>
             </div>
 
-            <header className="page-header" style={{ padding: '4rem 0 2rem 0' }}>
+            <header className="page-header" style={{ padding: '4rem 5% 0 5%' }}>
                 <div className="zara-breadcrumb">
                     <Link to="/">HOME</Link> / <span>CATALOG</span>
                 </div>
+            </header>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '2rem' }}>
-                    <div style={{ flex: '1', minWidth: '300px' }}>
-                        <button
-                            className="filter-trigger-btn"
-                            onClick={() => setIsFilterOpen(true)}
-                            style={{ display: 'block', marginBottom: '1.5rem' }}
-                        >
-                            FILTERS
-                        </button>
+            <div className="desktop-layout-container">
+                {/* COLUMN 1: FILTER TRIGGER */}
+                <div className="col-filter-trigger desktop-only">
+                    <button className="filter-word-btn" onClick={() => setIsFilterOpen(true)}>
+                        FILTER
+                    </button>
+                </div>
+
+                {/* COLUMN 2: ALTERNATING CONTENT */}
+                <div className="col-main-content">
+                    <div style={{ marginBottom: '4rem' }}>
                         <h1 className="zara-detail-title" style={{ margin: 0 }}>COLLECTION</h1>
                         <p className="zara-label" style={{ marginTop: '0.5rem' }}>
-                            {loading ? "REFRESHING CATALOG..." : `TOTAL ${wallpapers.length} WALLPAPERS FOUND`}
+                            {loading ? "REFRESHING..." : `TOTAL ${wallpapers.length} ITEMS`}
                         </p>
                     </div>
 
-                    <div className="search-panel" style={{ flex: '0 1 300px', width: '100%' }}>
-                        <div className="search-input-wrapper" style={{ position: 'relative', borderBottom: '1px solid #000' }}>
+                    {loading && wallpapers.length === 0 ? (
+                        <div className="loading" style={{ padding: '10rem 0' }}>LOADING...</div>
+                    ) : (
+                        <WallpaperList wallpapers={wallpapers} isAlternating={true} />
+                    )}
+                </div>
+
+                {/* COLUMN 3: TOOLS PANEL */}
+                <div className="col-tools-panel">
+                    {/* Search Section */}
+                    <div className="tool-section">
+                        <h3>SEARCH</h3>
+                        <div style={{ position: 'relative', borderBottom: '1px solid #000' }}>
                             <input
                                 type="text"
-                                placeholder="SEARCH"
+                                placeholder="KEYWORDS..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 style={{
@@ -186,37 +189,32 @@ const Catalog = () => {
                                     textTransform: 'uppercase'
                                 }}
                             />
-                            {searchQuery && (
-                                <button
-                                    onClick={() => setSearchQuery('')}
-                                    style={{
-                                        position: 'absolute',
-                                        right: '0',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        background: 'none',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '1rem',
-                                        padding: 0,
-                                        color: '#000'
-                                    }}
-                                >
-                                    &times;
-                                </button>
-                            )}
+                        </div>
+                    </div>
+
+                    {/* Links Section */}
+                    <div className="tool-section">
+                        <h3>DISCOVERY</h3>
+                        <Link to="/try-it-on" className="tool-link">
+                            <Layout size={16} /> TRY IT ON YOUR WALL
+                        </Link>
+                        <Link to="/ai-recommendations" className="tool-link">
+                            <Sparkles size={16} /> AI RECOMMENDATIONS
+                        </Link>
+                    </div>
+
+                    {/* User Section */}
+                    <div className="tool-section">
+                        <h3>ACCOUNT</h3>
+                        <div className="user-display">
+                            <User size={16} />
+                            <span className="user-name-label">
+                                {user ? (user.user_metadata?.full_name || user.email.split('@')[0]) : "GUEST"}
+                            </span>
                         </div>
                     </div>
                 </div>
-            </header>
-
-            <main>
-                {loading && wallpapers.length === 0 ? (
-                    <div className="loading" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', padding: '10rem 0', textAlign: 'center' }}>LOADING...</div>
-                ) : (
-                    <WallpaperList wallpapers={wallpapers} />
-                )}
-            </main>
+            </div>
         </div>
     );
 };
