@@ -510,7 +510,7 @@
     .detail-layout-container {
         grid-template-columns: 1fr;
         grid-template-areas: none;
-        padding-top: 0;
+        padding: 0;
         display: block;
         /* Fallback to block for simple stacking */
     }
@@ -524,8 +524,19 @@
         height: auto;
     }
 
+    .detail-hero-image {
+        height: 65vh;
+        object-fit: cover;
+    }
+
+    .detail-grid-image {
+        aspect-ratio: auto;
+        height: 60vh;
+        object-fit: cover;
+    }
+
     .detail-info-section {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 1rem;
     }
 
     .floating-product-bar-v3 {

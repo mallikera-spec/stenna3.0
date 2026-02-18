@@ -6,6 +6,12 @@ body {
   padding-top: var(--navbar-height);
 }
 
+@media (max-width: 1024px) {
+  body {
+    padding-top: 0;
+  }
+}
+
 .container {
   width: 100%;
   margin: 0;
@@ -19,9 +25,15 @@ main,
   padding: 0 1rem;
 }
 
+@media (max-width: 1024px) {
+  main {
+    padding: 0;
+  }
+}
+
 .nav-container {
   width: 100%;
-  padding: 1rem 1rem 0 1rem;
+  padding: 0 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -53,6 +65,12 @@ main,
   height: var(--navbar-height);
   display: flex;
   align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .navbar {
+    height: 60px;
+  }
 }
 
 .navbar.scrolled {
@@ -1314,6 +1332,12 @@ main,
   letter-spacing: 0.1em;
   color: #666;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .zara-breadcrumb {
+    margin-bottom: 1rem;
+  }
 }
 
 .zara-breadcrumb a {

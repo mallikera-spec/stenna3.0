@@ -39,7 +39,7 @@
 
 /* Sectional Layout */
 .zara-section {
-    min-height: 85vh;
+    min-height: 90vh;
     margin: 8rem 0;
     display: flex;
     align-items: center;
@@ -63,7 +63,7 @@
 
 .zara-visual-block {
     flex: 1.2;
-    height: 85vh;
+    height: 90vh;
     background-color: #f9f9f9;
     background-size: cover;
     background-position: center;
@@ -183,12 +183,13 @@
         flex-direction: column-reverse;
         gap: 0;
         padding: 0;
-        margin: 5rem 0;
+        margin: 0;
+        min-height: auto;
     }
 
     .zara-content-block {
-        padding: 4rem 8%;
-        /* Increased side padding */
+        padding: 2rem 5%;
+        /* Highly reduced side padding for edge-to-edge feel */
     }
 
     .hero-minimal-v2 h1 {
@@ -233,7 +234,8 @@
 
     .zara-visual-block {
         width: 100%;
-        height: 500px;
+        height: 80vh;
+        flex: none;
     }
 }
 
