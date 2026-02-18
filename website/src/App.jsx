@@ -51,9 +51,9 @@ function Navbar() {
             <Menu size={64} strokeWidth={1} />
           </button>
 
-          <div className="logo">
+          {/* <div className="logo">
             <Link to="/" onClick={() => setIsMenuOpen(false)}>STENNA</Link>
-          </div>
+          </div> */}
 
           <div className="nav-links desktop-only">
             {/* Keeping some minimal links or just icons for a Zara feel */}

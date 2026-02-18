@@ -18,10 +18,10 @@ const FloatingProductBar = ({ currentSlug, products = [], loading = false }) => 
             if (index !== -1) {
                 setSelectedIndex(index);
 
-                // Calculate centering offset within the 25% container
-                const itemWidth = 90; // thumbnail (80) + gap (10)
+                // Calculate centering offset within the new 25% width container
+                const itemWidth = 55; // 45px + 10px gap
                 const containerWidth = window.innerWidth * 0.25;
-                const offset = -index * itemWidth + (containerWidth / 2) - 45;
+                const offset = -index * itemWidth + (containerWidth / 2) - 22.5; // 22.5 is half of 45
                 setScrollOffset(offset);
             }
         }
@@ -30,11 +30,11 @@ const FloatingProductBar = ({ currentSlug, products = [], loading = false }) => 
     const handleProductClick = (index, slug) => {
         if (slug === currentSlug || isSwiping) return;
 
-        // Optimistic update for cinematic feel
+        // Optimistic update
         setSelectedIndex(index);
-        const itemWidth = 90;
+        const itemWidth = 55;
         const containerWidth = window.innerWidth * 0.25;
-        const offset = -index * itemWidth + (containerWidth / 2) - 45;
+        const offset = -index * itemWidth + (containerWidth / 2) - 22.5;
         setScrollOffset(offset);
 
         // Immediate navigation
@@ -88,7 +88,6 @@ const FloatingProductBar = ({ currentSlug, products = [], loading = false }) => 
                                 src={product.images?.[0]?.image_url || 'https://via.placeholder.com/80x120'}
                                 alt={product.name}
                             />
-                            <div className="item-indicator-v3" />
                         </div>
                     ))}
                 </div>
