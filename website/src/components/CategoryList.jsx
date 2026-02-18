@@ -5,32 +5,21 @@ const CategoryList = ({ categories, selectedCategoryIds, onToggleCategory }) => 
 
     return (
         <div className="category-list">
-            <span className="section-label">[02] CATEGORIES</span>
-            <div className="flex-wrap" style={{ gap: '1rem' }}>
+            <div className="zara-sidebar-list">
                 <button
-                    className={`btn-zara-outline ${selectedCategoryIds.length === 0 ? 'active' : ''}`}
+                    className={`zara-sidebar-item ${selectedCategoryIds.length === 0 ? 'active' : ''}`}
                     onClick={() => onToggleCategory(null)}
-                    style={{
-                        padding: '0.4rem 1rem',
-                        fontSize: '0.6rem',
-                        backgroundColor: selectedCategoryIds.length === 0 ? '#000' : 'transparent',
-                        color: selectedCategoryIds.length === 0 ? '#fff' : '#000'
-                    }}
                 >
-                    ALL
+                    <span className="zara-item-num">|01|</span>
+                    VIEW ALL
                 </button>
-                {categories.map(category => (
+                {categories.map((category, index) => (
                     <button
                         key={category.id}
-                        className={`btn-zara-outline ${selectedCategoryIds.includes(category.id) ? 'active' : ''}`}
+                        className={`zara-sidebar-item ${selectedCategoryIds.includes(category.id) ? 'active' : ''}`}
                         onClick={() => onToggleCategory(category.id)}
-                        style={{
-                            padding: '0.4rem 1rem',
-                            fontSize: '0.6rem',
-                            backgroundColor: selectedCategoryIds.includes(category.id) ? '#000' : 'transparent',
-                            color: selectedCategoryIds.includes(category.id) ? '#fff' : '#000'
-                        }}
                     >
+                        <span className="zara-item-num">|{String(index + 2).padStart(2, '0')}|</span>
                         {category.name}
                     </button>
                 ))}

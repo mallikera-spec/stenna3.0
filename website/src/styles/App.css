@@ -16,12 +16,12 @@ main,
 .footer-content {
   width: 100%;
   margin: 0;
-  padding: 0 5%;
+  padding: 0 1rem;
 }
 
 .nav-container {
   width: 100%;
-  padding: 1.5rem 5% 0 5%;
+  padding: 1rem 1rem 0 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,10 +37,7 @@ main,
   cursor: pointer;
   padding: 0;
   z-index: 1001;
-}
-
-.mobile-menu-toggle:hover {
-  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
 .navbar {
@@ -933,7 +930,7 @@ main,
 }
 
 .zara-menu-container {
-  padding: 0 5%;
+  padding: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -941,9 +938,13 @@ main,
 
 .zara-menu-header {
   display: flex;
-  height: calc(var(--navbar-height) + 1.5rem);
+  height: calc(var(--navbar-height) + 1rem);
+  /* Match nav padding */
   align-items: center;
-  padding-top: 1.5rem;
+  padding-top: 1rem;
+  /* Match nav padding */
+  padding-left: 1rem;
+  /* Match nav padding */
   margin-bottom: 2rem;
 }
 
@@ -954,19 +955,23 @@ main,
   line-height: 0.8;
   color: #000;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  padding-left: 1rem;
 }
 
 .zara-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 10px;
+  padding: 0;
   color: #000;
-  transition: transform 0.3s ease;
+  transition: opacity 0.2s;
 }
 
 .zara-close-btn:hover {
-  transform: rotate(90deg);
+  opacity: 0.6;
 }
 
 .zara-menu-content {
@@ -974,6 +979,7 @@ main,
   grid-template-columns: 1fr 1.5fr 1fr;
   gap: 4rem;
   flex-grow: 1;
+  padding: 0 1.5rem;
 }
 
 /* Groups Column */

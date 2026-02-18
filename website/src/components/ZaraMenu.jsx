@@ -35,8 +35,8 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
         <div className={`zara-menu-overlay ${isOpen ? 'open' : ''}`}>
             <div className="zara-menu-container">
                 <div className="zara-menu-header">
-                    <button className="zara-close-btn" onClick={onClose} style={{ padding: '0', marginLeft: '-8px' }}>
-                        <X size={48} strokeWidth={1} />
+                    <button className="zara-close-btn" onClick={onClose} style={{ padding: '0', marginLeft: '-12px' }}>
+                        <X size={64} strokeWidth={1} />
                     </button>
                     <div className="zara-logo-large">STENNA</div>
                 </div>

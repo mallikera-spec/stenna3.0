@@ -1,32 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Layout, ArrowRight, User } from 'lucide-react';
+import {
+    ShieldCheck,
+    Globe,
+    Star,
+    Layers,
+    Sparkles,
+    Layout,
+    ChevronRight,
+    ArrowRight
+} from 'lucide-react';
 import { fetchGroups } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import FloatingProductBar from '../components/FloatingProductBar';
 import '../styles/Home.css';
-import '../styles/CatalogLayout.css';
 
 const Home = () => {
-    const { user } = useAuth();
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        const loadInitialData = async () => {
+        const loadGroups = async () => {
             try {
-                const groupsData = await fetchGroups();
-                setGroups(groupsData);
+                const data = await fetchGroups();
+                setGroups(data);
             } catch (error) {
-                console.error("Error fetching home data:", error);
+                console.error("Error fetching groups:", error);
             } finally {
                 setLoading(false);
             }
         };
-        loadInitialData();
+        loadGroups();
     }, []);
 
-    // Fallback images for groups if missing
+    // Curated high-end fallback images for Zara aesthetic
     const fallbackImages = [
         'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&q=80',
         'https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&q=80',
@@ -35,101 +42,90 @@ const Home = () => {
     ];
 
     return (
-        <div className="home-page fade-in-up">
-            {/* <header className="page-header" style={{ padding: '8rem 5% 4rem 5%', textAlign: 'left' }}>
-                <span className="zara-label">STENNA COLLECTION</span>
-                <h1 className="zara-hero-title" style={{ fontSize: 'clamp(3rem, 10vw, 6rem)', lineHeight: '0.9', margin: '1rem 0' }}>
-                    PURE <br /> MATERIALITY.
-                </h1>
-                <Link to="/catalog" className="btn-zara-outline" style={{ marginTop: '2rem', display: 'inline-block' }}>
-                    ENTER ARCHIVE
-                </Link>
-            </header> */}
-
-            <div className="home-layout-container">
-                {/* COLUMN 1: ALTERNATING GROUPS */}
-                <div className="col-main-content">
-                    <div style={{ marginBottom: '4rem' }}>
-                        <h2 className="zara-label" style={{ fontWeight: '800' }}>OUR COLLECTIONS</h2>
+        <div className="home-page">
+            <div className="zara-container">
+                {/* 01. HERO SECTION */}
+                {/* <section className="hero-minimal-v2 zara-hero">
+                    <div className="hero-content">
+                        <span className="zara-label">STENNA COLLECTION</span>
+                        <h1 className="zara-hero-title">PURE <br /> MATERIALITY.</h1>
+                        <Link to="/catalog" className="btn-zara-outline">ENTER ARCHIVE</Link>
                     </div>
+                </section> */}
 
-                    {loading ? (
-                        <div className="loading" style={{ padding: '10rem 0' }}>LOADING COLLECTIONS...</div>
-                    ) : (
-                        <div className="alternating-list">
-                            {groups.map((group, index) => (
-                                <div key={group.id} className="alternating-item fade-in-up">
-                                    <div className="alt-image-box">
-                                        <Link to={`/catalog?group=${group.id}`}>
-                                            <img
-                                                src={group.image_url || fallbackImages[index % fallbackImages.length]}
-                                                alt={group.name}
-                                                loading="lazy"
-                                            />
-                                        </Link>
+
+                {/* DYNAMIC GROUPS SECTIONS */}
+                {loading ? (
+                    <div style={{ padding: '10rem', textAlign: 'center', letterSpacing: '2px', textTransform: 'uppercase', color: '#000', fontWeight: '800' }}>
+                        Loading Collections...
+                    </div>
+                ) : (
+                    groups.map((group, index) => (
+                        <section key={group.id} className="zara-section">
+                            <div className="zara-content-block">
+                                <span className="section-label" style={{ color: '#000', fontWeight: '900' }}>
+                                    COLLECTION No. {index + 1} &mdash; {group.name}
+                                </span>
+                                <h2 style={{ fontWeight: '900' }}>
+                                    {group.name.split(' ').map((word, i) => (
+                                        <React.Fragment key={i}>
+                                            {word} {i === 0 && <br />}
+                                        </React.Fragment>
+                                    ))}
+                                </h2>
+                                <p style={{ color: '#000', fontWeight: '500' }}>
+                                    {group.description || "Discover the essence of architectural purity with our hand-curated collection of premium wall coverings."}
+                                </p>
+                                <div className="infographic-points" style={{ marginTop: '1.5rem', marginBottom: '2rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#000', fontWeight: '600' }}>
+                                        <ChevronRight size={14} /> <span>Hand-crafted textures</span>
                                     </div>
-                                    <div className="alt-text-box">
-                                        <span className="zara-label" style={{ fontSize: '0.6rem', marginBottom: '0.5rem', display: 'block' }}>
-                                            COLLECTION No. {index + 1}
-                                        </span>
-                                        <h4>{group.name}</h4>
-                                        <p>{group.description || "Discover the essence of architectural purity with our hand-curated collection of premium wall coverings."}</p>
-                                        <Link to={`/catalog?group=${group.id}`} className="btn-zara-link" style={{ marginTop: '2rem' }}>
-                                            VIEW COLLECTION
-                                        </Link>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#000', fontWeight: '600' }}>
+                                        <ChevronRight size={14} /> <span>Sustainable premium materials</span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-
-                {/* COLUMN 2: TOOLS PANEL */}
-                <div className="col-tools-panel">
-                    {/* Search Section */}
-                    <div className="tool-section">
-                        <h3>DISCOVER</h3>
-                        <div style={{ position: 'relative', borderBottom: '1px solid #000', marginBottom: '1rem' }}>
-                            <input
-                                type="text"
-                                placeholder="SEARCH CATALOG..."
-                                onFocus={() => window.location.href = '/catalog'}
+                                <Link to={`/catalog?group=${group.id}`} className="btn-zara-link" style={{ fontWeight: '800' }}>
+                                    Explore {group.name} Collection <ArrowRight size={14} style={{ marginLeft: '8px', verticalAlign: 'middle' }} />
+                                </Link>
+                            </div>
+                            <div
+                                className="zara-visual-block"
                                 style={{
-                                    width: '100%',
-                                    padding: '0.5rem 0',
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    fontSize: '0.7rem',
-                                    letterSpacing: '0.1em',
-                                    outline: 'none',
-                                    textTransform: 'uppercase'
+                                    backgroundImage: `url(${group.image_url || fallbackImages[index % fallbackImages.length]})`
                                 }}
-                            />
+                            >
+                                <div className="visual-block-overlay"></div>
+                            </div>
+                        </section>
+                    ))
+                )}
+
+                {/* FOOTER VALUES
+                <section style={{ padding: '10rem 0', textAlign: 'center', borderTop: '1px solid #efefef' }}>
+                    <h2 style={{ fontSize: '3.5rem', marginBottom: '5rem', letterSpacing: '8px', fontWeight: '300' }}>The Stenna Standard</h2>
+                    <div className="grid grid-cols-3" style={{ gap: '5rem', textAlign: 'left', padding: '0 5%' }}>
+                        <div>
+                            <span className="section-label" style={{ marginBottom: '1rem' }}>QUALITY</span>
+                            <h4 style={{ letterSpacing: '2px', marginBottom: '1rem', fontWeight: '800' }}>Italian Heritage</h4>
+                            <p style={{ color: '#666', fontSize: '0.9rem' }}>Artisanal quality produced in the world's most exclusive wallpaper mills in Florence.</p>
+                        </div>
+                        <div>
+                            <span className="section-label" style={{ marginBottom: '1rem' }}>TECH</span>
+                            <h4 style={{ letterSpacing: '2px', marginBottom: '1rem', fontWeight: '800' }}>Neural Search</h4>
+                            <p style={{ color: '#666', fontSize: '0.9rem' }}>Next-gen neural discovery engine for perfect pattern matching with proprietary vision algorithms.</p>
+                        </div>
+                        <div>
+                            <span className="section-label" style={{ marginBottom: '1rem' }}>SERVICE</span>
+                            <h4 style={{ letterSpacing: '2px', marginBottom: '1rem', fontWeight: '800' }}>White Glove</h4>
+                            <p style={{ color: '#666', fontSize: '0.9rem' }}>Direct consultation services and priority sampling for architects and luxury home-owners.</p>
                         </div>
                     </div>
-
-                    {/* Quick Access */}
-                    <div className="tool-section">
-                        <h3>QUICK ACCESS</h3>
-                        <Link to="/try-it-on" className="tool-link">
-                            <Layout size={16} /> TRY IT ON
-                        </Link>
-                        <Link to="/ai-recommendations" className="tool-link">
-                            <Sparkles size={16} /> AI ADVISOR
-                        </Link>
+                    <div style={{ marginTop: '8rem' }}>
+                        <Link to="/ai-recommendations" className="btn-zara-solid">Book a Consultation</Link>
                     </div>
+                </section> */}
 
-                    {/* User Section */}
-                    <div className="tool-section">
-                        <h3>MY STENNA</h3>
-                        <div className="user-display">
-                            <User size={16} />
-                            <span className="user-name-label">
-                                {user ? (user.user_metadata?.full_name || user.email.split('@')[0]) : "GUEST"}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                {/* <FloatingProductBar /> */}
             </div>
         </div>
     );

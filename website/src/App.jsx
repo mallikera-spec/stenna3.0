@@ -47,13 +47,13 @@ function Navbar() {
     <>
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
-          <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0', marginLeft: '-8px' }}>
-            <Menu size={48} strokeWidth={1} />
+          <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0', marginLeft: '-12px' }}>
+            <Menu size={64} strokeWidth={1} />
           </button>
 
-          {/* <div className="logo">
+          <div className="logo">
             <Link to="/" onClick={() => setIsMenuOpen(false)}>STENNA</Link>
-          </div> */}
+          </div>
 
           <div className="nav-links desktop-only">
             {/* Keeping some minimal links or just icons for a Zara feel */}
@@ -64,7 +64,7 @@ function Navbar() {
             <Link to="/profile/enquiries" className="nav-item">
               ENQUIRIES
             </Link>
-            <Link to="/airecommend" className="nav-item nav-usp">
+            <Link to="/ai-recommendations" className="nav-item nav-usp">
               <Sparkles size={14} className="usp-icon" /> AI RECOMMEND
             </Link>
             {/* <Link to="/showcase" className="nav-item">SHOWCASE</Link> */}

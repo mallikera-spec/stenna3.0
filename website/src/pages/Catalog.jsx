@@ -22,17 +22,25 @@ const Catalog = () => {
     const [loading, setLoading] = useState(true);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    // Initial load for groups
+    const [allCategories, setAllCategories] = useState([]);
+
+    // Initial load for groups and all categories
     useEffect(() => {
-        const loadGroups = async () => {
+        const loadInitialData = async () => {
             try {
-                const groupsData = await fetchGroups();
+                const [groupsData, catsData] = await Promise.all([
+                    fetchGroups(),
+                    fetchCategories()
+                ]);
                 setGroups(groupsData);
+                setAllCategories(catsData);
+                // Initial categories displayed (all)
+                setCategories(catsData);
             } catch (error) {
-                console.error("Error loading groups:", error);
+                console.error("Error loading initial data:", error);
             }
         };
-        loadGroups();
+        loadInitialData();
     }, []);
 
     // Sync URL params to state
@@ -59,14 +67,15 @@ const Catalog = () => {
         const loadFilteredData = async () => {
             setLoading(true);
             try {
+                // Filter categories based on selected group
                 if (selectedGroupIds.length > 0) {
-                    const catsPromises = selectedGroupIds.map(id => fetchCategories(id));
-                    const catsArrays = await Promise.all(catsPromises);
-                    const mergedCats = Array.from(new Set(catsArrays.flat().map(c => c.id)))
-                        .map(id => catsArrays.flat().find(c => c.id === id));
-                    setCategories(mergedCats);
+                    const filteredCats = allCategories.filter(cat =>
+                        selectedGroupIds.includes(cat.group_id?.toString())
+                    );
+                    setCategories(filteredCats);
                 } else {
-                    setCategories([]);
+                    // If "VIEW ALL" is selected for groups, show all categories
+                    setCategories(allCategories);
                 }
 
                 const walls = await fetchWallpapers({
@@ -82,7 +91,7 @@ const Catalog = () => {
             }
         };
         loadFilteredData();
-    }, [selectedGroupIds, selectedCategoryIds, debouncedSearch]);
+    }, [selectedGroupIds, selectedCategoryIds, debouncedSearch, allCategories]);
 
     const handleToggleGroup = (groupId) => {
         if (groupId === null) {
@@ -137,33 +146,38 @@ const Catalog = () => {
                 </button>
             </div>
 
-            <header className="page-header" style={{ padding: '4rem 5% 0 5%' }}>
-                <div className="zara-breadcrumb">
-                    <Link to="/">HOME</Link> / <span>CATALOG</span>
-                </div>
-            </header>
-
-            <div className="desktop-layout-container">
+            <div className="desktop-layout-container" style={{ paddingTop: '0' }}>
                 {/* COLUMN 1: FILTER TRIGGER */}
-                <div className="col-filter-trigger desktop-only">
-                    <button className="filter-word-btn" onClick={() => setIsFilterOpen(true)}>
-                        FILTER
-                    </button>
-                </div>
-
-                {/* COLUMN 2: ALTERNATING CONTENT */}
-                <div className="col-main-content">
-                    <div style={{ marginBottom: '4rem' }}>
-                        <h1 className="zara-detail-title" style={{ margin: 0 }}>COLLECTION</h1>
-                        <p className="zara-label" style={{ marginTop: '0.5rem' }}>
-                            {loading ? "REFRESHING..." : `TOTAL ${wallpapers.length} ITEMS`}
-                        </p>
+                <div className="col-filter-trigger desktop-only" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <div className="zara-breadcrumb" style={{ fontSize: '0.6rem', marginBottom: '2rem' }}>
+                        <Link to="/">HOME</Link> / <span>CATALOG</span>
                     </div>
 
+                    <div style={{ marginBottom: '2rem' }}>
+                        <GroupList groups={groups} selectedGroupIds={selectedGroupIds} onToggleGroup={handleToggleGroup} />
+                    </div>
+
+                    <div style={{ marginBottom: '2rem' }}>
+                        <CategoryList categories={categories} selectedCategoryIds={selectedCategoryIds} onToggleCategory={handleToggleCategory} />
+                    </div>
+
+                    <div className="zara-bottom-controls">
+                        <button className="filter-word-btn" onClick={() => setIsFilterOpen(true)} style={{ textAlign: 'left' }}>
+                            FILTERS
+                        </button>
+
+                        <div style={{ opacity: 0.4, fontSize: '0.6rem', letterSpacing: '0.05em', marginTop: '1rem' }}>
+                            {loading ? "REFRESHING..." : `${wallpapers.length} ARTWORKS FOUND`}
+                        </div>
+                    </div>
+                </div>
+
+                {/* COLUMN 2: SCROLLABLE GRID */}
+                <div className="col-main-content">
                     {loading && wallpapers.length === 0 ? (
                         <div className="loading" style={{ padding: '10rem 0' }}>LOADING...</div>
                     ) : (
-                        <WallpaperList wallpapers={wallpapers} isAlternating={true} />
+                        <WallpaperList wallpapers={wallpapers} isAlternating={false} />
                     )}
                 </div>
 

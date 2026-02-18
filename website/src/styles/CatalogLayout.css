@@ -2,11 +2,33 @@
 
 .desktop-layout-container {
     display: grid;
-    grid-template-columns: 100px 1fr minmax(200px, max-content);
+    grid-template-columns: 200px 1fr 280px;
     gap: 4rem;
-    padding: 2rem 5% 8rem 5%;
-    min-height: calc(100vh - var(--navbar-height));
+    padding: 0 1rem;
+    height: calc(100vh - var(--navbar-height) - 2rem);
     align-items: flex-start;
+    overflow: hidden;
+}
+
+.col-main-content {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 1.5rem;
+    padding-top: 0;
+    /* Products to the top */
+}
+
+/* Hide scrollbar for clean look but keep functionality */
+.col-main-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.col-main-content::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+.col-main-content:hover::-webkit-scrollbar-thumb {
+    background: #eee;
 }
 
 @media (max-width: 1024px) {
@@ -22,7 +44,8 @@
     display: grid;
     grid-template-columns: 1fr minmax(200px, max-content);
     gap: 4rem;
-    padding: 2rem 5% 8rem 5%;
+    padding: 2rem 1rem 8rem 1rem;
+    /* Reduced white space */
     min-height: calc(100vh - var(--navbar-height));
     align-items: flex-start;
 }
@@ -37,8 +60,9 @@
 
 /* Column 1: Filter Trigger */
 .col-filter-trigger {
+    padding-top: 2rem;
     position: sticky;
-    top: calc(var(--navbar-height) + 2rem);
+    top: 0;
 }
 
 .filter-word-btn {
@@ -59,8 +83,9 @@
 
 /* Column 3: Tools Panel */
 .col-tools-panel {
+    padding-top: 2rem;
     position: sticky;
-    top: calc(var(--navbar-height) + 4rem);
+    top: 0;
     display: flex;
     flex-direction: column;
     gap: 3rem;
@@ -169,12 +194,103 @@
     color: #444;
 }
 
+/* Zara Sidebar List Styles */
+.zara-sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.zara-sidebar-item {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #000;
+    display: flex;
+    gap: 0.75rem;
+    transition: opacity 0.2s;
+    font-weight: 400;
+}
+
+.zara-sidebar-item:hover {
+    opacity: 0.6;
+}
+
+.zara-sidebar-item.active {
+    font-weight: 800;
+}
+
+.zara-item-num {
+    opacity: 0.4;
+    font-weight: 400 !important;
+}
+
+/* Bottom Controls for Column 1 */
+.zara-bottom-controls {
+    margin-top: auto;
+    padding-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.view-switcher {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: #999;
+}
+
+.view-num {
+    cursor: pointer;
+    color: #999;
+    background: none;
+    border: none;
+    padding: 0;
+    font-weight: 400;
+}
+
+.view-num.active {
+    color: #000;
+    font-weight: 800;
+}
+
 @media (max-width: 768px) {
 
     .alternating-item,
     .alternating-item:nth-child(even) {
         flex-direction: column;
         gap: 1.5rem;
+    }
+}
+
+.zara-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    padding-bottom: 8rem;
+}
+
+@media (min-width: 1400px) {
+    .zara-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1399px) and (min-width: 1025px) {
+    .zara-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
