@@ -44,7 +44,7 @@ function Navbar() {
   };
 
   return (
-    <> 
+    <>
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
           <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)}>
@@ -57,15 +57,15 @@ function Navbar() {
 
           <div className="nav-links desktop-only">
             {/* Keeping some minimal links or just icons for a Zara feel */}
-            <Link to="/catalog" className="nav-item nav-usp">CATALOG</Link>
+            <Link to="/catalog" className="nav-item">CATALOG</Link>
             <Link to="/try-it-on" className="nav-item nav-usp">
-              <Layout size={16} className="usp-icon" /> <Sparkles size={16} className="usp-icon" />Try it On
+              <Sparkles size={14} className="usp-icon" /> TRY IT ON
             </Link>
-            <Link to="/profile/enquiries" className="nav-item nav-usp">
+            <Link to="/profile/enquiries" className="nav-item">
               ENQUIRIES
             </Link>
             <Link to="/airecommend" className="nav-item nav-usp">
-              <Sparkles size={16} className="usp-icon" /> AI Recommend
+              <Sparkles size={14} className="usp-icon" /> AI RECOMMEND
             </Link>
             {/* <Link to="/showcase" className="nav-item">SHOWCASE</Link> */}
             {user ? (

@@ -149,8 +149,8 @@ const WallpaperDetail = () => {
         setTouchStart(null);
     };
 
-    if (loading) return <div className="loading">Loading Stenna details...</div>;
-    if (error) return <div className="error" style={{ textAlign: 'center', padding: '4rem' }}>{error}</div>;
+    if (loading) return <div className="loading" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', padding: '10rem 0', textAlign: 'center' }}>LOADING...</div>;
+    if (error) return <div className="error" style={{ textAlign: 'center', padding: '10rem 0', fontSize: '0.7rem', textTransform: 'uppercase' }}>{error}</div>;
     if (!wallpaper) return null;
 
     const firstGroupId = wallpaper.groups?.[0]?.id;
@@ -248,11 +248,12 @@ const WallpaperDetail = () => {
             <AnimatePresence mode="wait">
                 <motion.div
                     key={slug}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="detail-container"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="detail-container fade-in-up"
+                    style={{ gridTemplateColumns: isMobile ? '1fr' : '1.2fr 400px' }}
                 >
                     {isMobile ? (
                         /* Mobile Optimized Layout */
@@ -263,48 +264,84 @@ const WallpaperDetail = () => {
                                 <div className="expand-hint">TAP TO EXPAND</div>
                             </div>
 
-                            {/* 2. Tabbed Information */}
-                            <div className="mobile-info-tabs">
-                                <div className="tab-headers">
-                                    <button className={activeTab === 'description' ? 'active' : ''} onClick={() => setActiveTab('description')}>Info</button>
-                                    <button className={activeTab === 'specs' ? 'active' : ''} onClick={() => setActiveTab('specs')}>Specs</button>
-                                    <button className={activeTab === 'actions' ? 'active' : ''} onClick={() => setActiveTab('actions')}>Buy</button>
+                            {/* 2. Product Info (Mobile) */}
+                            <div className="mobile-info-tabs" style={{ padding: '2rem 1.5rem 1rem 1.5rem' }}>
+                                <div className="zara-breadcrumb" style={{ marginBottom: '1rem' }}>
+                                    <Link to="/catalog">Catalog</Link> / <span>{wallpaper.name}</span>
                                 </div>
-                                <div className="tab-content">
-                                    {activeTab === 'description' && (
-                                        <div className="tab-pane">
-                                            <h1>{wallpaper.name}</h1>
-                                            <p>{wallpaper.slug}</p>
-                                            <p className="desc">Experience the luxury of {wallpaper.name}. Designed for high-end interiors, this premium wallpaper combines texture and durability.</p>
-                                        </div>
-                                    )}
-                                    {activeTab === 'specs' && (
-                                        <div className="tab-pane">
-                                            <div className="specs-list">
-                                                <div className="spec-row"><span>Material</span><span>Non-woven</span></div>
-                                                <div className="spec-row"><span>Roll Size</span><span>0.53m x 10m</span></div>
-                                                <div className="spec-row"><span>Origin</span><span>Italian Collection</span></div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {activeTab === 'actions' && (
-                                        <div className="tab-pane">
-                                            <div className="mobile-actions">
-                                                <button className="btn-usp-try" onClick={() => setIsVisualizerOpen(true)}>Try it on my wall</button>
-                                                <button className="btn-usp-enquire" onClick={() => setIsEnquiryOpen(true)}>Enquire for Quote</button>
-                                            </div>
-                                        </div>
-                                    )}
+                                <h1 className="zara-detail-title" style={{ fontSize: '1.2rem' }}>{wallpaper.name}</h1>
+                                <p className="zara-detail-slug">{wallpaper.slug}</p>
+                            </div>
+
+                            {/* 3. Details and Actions (Mobile) */}
+                            <div className="zara-detail-info" style={{ position: 'static', padding: '2rem 1.5rem' }}>
+                                <div className="zara-detail-desc" style={{ maxWidth: '100%', marginBottom: '2rem' }}>
+                                    <p>{wallpaper.description || `Experience the luxury of ${wallpaper.name}. Designed for high-end interiors, this premium wallpaper combines texture and durability.`}</p>
+                                </div>
+
+                                <div className="zara-detail-meta" style={{ marginBottom: '2rem' }}>
+                                    <div className="meta-item">
+                                        <span>DESIGN CODE</span>
+                                        <span>{wallpaper.design_code || wallpaper.slug?.toUpperCase()}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>MATERIAL</span>
+                                        <span>{wallpaper.material || 'NON-WOVEN PREMIUM'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>FINISH</span>
+                                        <span>{wallpaper.finish || 'MATTE'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>ROLL WIDTH</span>
+                                        <span>{wallpaper.roll_width || '53'} CM</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>ROLL HEIGHT</span>
+                                        <span>{wallpaper.roll_height || '10'} M</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>WASHABILITY</span>
+                                        <span>{wallpaper.washability || 'WASHABLE'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>DURABILITY</span>
+                                        <span>{wallpaper.durability || 'HIGH'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>BRAND</span>
+                                        <span>{wallpaper.brand || 'LUXE WALLS'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>COUNTRY</span>
+                                        <span>{wallpaper.country || 'ITALY'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="zara-detail-actions">
+                                    <button
+                                        className="btn-zara-primary"
+                                        onClick={() => setIsVisualizerOpen(true)}
+                                    >
+                                        TRY ON MY WALL
+                                    </button>
+                                    <button
+                                        className="btn-zara-outline"
+                                        onClick={() => setIsEnquiryOpen(true)}
+                                    >
+                                        ENQUIRE FOR QUOTE
+                                    </button>
                                 </div>
                             </div>
 
-                            {/* 3. Remaining Images */}
+                            {/* 4. Image List (Mobile) - Moved to bottom */}
                             <div className="mobile-gallery">
                                 {wallpaper.images?.slice(1).map((img, idx) => (
                                     <img
                                         key={idx}
                                         src={img.image_url}
                                         alt="Gallery"
+                                        style={{ marginBottom: '2px' }}
                                         onClick={() => {
                                             setActiveImage(idx + 1);
                                             setIsGalleryOpen(true);
@@ -317,13 +354,14 @@ const WallpaperDetail = () => {
                         /* Desktop Layout */
                         <>
                             {/* Left Column: Vertical Image Scroll */}
-                            <div className="detail-image-scroll">
+                            <div className="detail-image-scroll" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                                 {wallpaper.images?.map((img, idx) => (
                                     <img
                                         key={idx}
                                         src={img.image_url}
                                         alt={`${wallpaper.name} detail ${idx}`}
                                         className="detail-scroll-image"
+                                        style={{ width: '100%', borderBottom: '1px solid #f0f0f0' }}
                                         onClick={() => {
                                             setActiveImage(idx);
                                             setIsGalleryOpen(true);
@@ -333,7 +371,7 @@ const WallpaperDetail = () => {
                             </div>
 
                             {/* Right Column: Sticky Info Area */}
-                            <div className="zara-detail-info">
+                            <div className="zara-detail-info" style={{ height: 'calc(100vh - var(--navbar-height, 80px))', overflowY: 'auto' }}>
                                 <nav className="zara-breadcrumb">
                                     <Link to="/catalog">Catalog</Link> / <span>{wallpaper.name}</span>
                                 </nav>
@@ -342,21 +380,45 @@ const WallpaperDetail = () => {
                                 <p className="zara-detail-slug">{wallpaper.slug}</p>
 
                                 <div className="product-description zara-detail-desc">
-                                    <p>Minimalist wallpaper with refined texture. Designed for high-end archival interiors.</p>
+                                    <p>Experience the luxury of {wallpaper.name}. Designed for high-end interiors, this premium wallpaper combines texture and durability. Minimalist wallpaper with refined texture.</p>
                                 </div>
 
                                 <div className="zara-detail-meta">
                                     <div className="meta-item">
-                                        <span>Material</span>
-                                        <span>Non-woven Premium</span>
+                                        <span>DESIGN CODE</span>
+                                        <span>{wallpaper.design_code || wallpaper.slug?.toUpperCase()}</span>
                                     </div>
                                     <div className="meta-item">
-                                        <span>Roll Size</span>
-                                        <span>0.53m x 10m</span>
+                                        <span>MATERIAL</span>
+                                        <span>{wallpaper.material || 'NON-WOVEN PREMIUM'}</span>
                                     </div>
                                     <div className="meta-item">
-                                        <span>Origin</span>
-                                        <span>Stenna Heritage</span>
+                                        <span>FINISH</span>
+                                        <span>{wallpaper.finish || 'MATTE'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>ROLL WIDTH</span>
+                                        <span>{wallpaper.roll_width || '53'} CM</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>ROLL HEIGHT</span>
+                                        <span>{wallpaper.roll_height || '10'} M</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>WASHABILITY</span>
+                                        <span>{wallpaper.washability || 'WASHABLE'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>DURABILITY</span>
+                                        <span>{wallpaper.durability || 'HIGH'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>BRAND</span>
+                                        <span>{wallpaper.brand || 'LUXE WALLS'}</span>
+                                    </div>
+                                    <div className="meta-item">
+                                        <span>COUNTRY</span>
+                                        <span>{wallpaper.country || 'ITALY'}</span>
                                     </div>
                                 </div>
 
@@ -365,13 +427,13 @@ const WallpaperDetail = () => {
                                         className="btn-zara-primary"
                                         onClick={() => setIsVisualizerOpen(true)}
                                     >
-                                        Try on my wall
+                                        TRY ON MY WALL
                                     </button>
                                     <button
                                         className="btn-zara-outline"
                                         onClick={() => setIsEnquiryOpen(true)}
                                     >
-                                        Enquire for Quote
+                                        ENQUIRE FOR QUOTE
                                     </button>
                                 </div>
                             </div>

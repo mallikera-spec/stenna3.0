@@ -16,8 +16,12 @@ const WallpaperList = ({ wallpapers }) => {
                 onClose={() => setSelectedWallpaper(null)}
                 wallpaper={selectedWallpaper}
             />
-            {wallpapers.map(wallpaper => (
-                <div key={wallpaper.id} className="card zara-product-card">
+            {wallpapers.map((wallpaper, index) => (
+                <div
+                    key={wallpaper.id}
+                    className="card zara-product-card fade-in-up"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                >
                     <Link to={`/wallpaper/${wallpaper.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                         <div className="image-container zara-image-aspect">
                             <img
@@ -26,9 +30,9 @@ const WallpaperList = ({ wallpapers }) => {
                                 loading="lazy"
                             />
                         </div>
-                        <div className="card-content zara-product-info">
-                            <h4>{wallpaper.name}</h4>
-                            <p className="slug">{wallpaper.slug}</p>
+                        <div className="card-content zara-product-info" style={{ padding: '0.5rem 0' }}>
+                            <h4 style={{ fontSize: '0.65rem', fontWeight: '400', letterSpacing: '0.05em' }}>{wallpaper.name}</h4>
+                            <p className="slug" style={{ fontSize: '0.6rem', color: '#999', marginTop: '2px' }}>{wallpaper.slug}</p>
                         </div>
                     </Link>
                 </div>

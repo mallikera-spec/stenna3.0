@@ -5,6 +5,7 @@ import { fetchGroups, fetchCategories, fetchWallpapers } from '../services/api';
 import GroupList from '../components/GroupList';
 import CategoryList from '../components/CategoryList';
 import WallpaperList from '../components/WallpaperList';
+import { Link } from 'react-router-dom';
 
 const Catalog = () => {
     const [searchParams] = useSearchParams();
@@ -108,82 +109,110 @@ const Catalog = () => {
         );
     };
 
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
     return (
-        <div className="catalog-page">
-            <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '2rem' }}>
-                <div style={{ flex: '1', minWidth: '300px' }}>
-                    <p style={{ color: 'var(--text-secondary)' }}>Browse by groups and categories to find your perfect design.</p>
+        <div className="catalog-page fade-in-up">
+            {/* Filter Overlay */}
+            <div
+                className={`filter-overlay ${isFilterOpen ? 'open' : ''}`}
+                onClick={() => setIsFilterOpen(false)}
+            ></div>
+
+            {/* Filter Drawer */}
+            <div className={`filter-drawer ${isFilterOpen ? 'open' : ''}`}>
+                <div className="filter-header">
+                    <button className="btn-close-filter" onClick={() => setIsFilterOpen(false)}>&times;</button>
                 </div>
 
-                <div className="search-panel" style={{ flex: '0 1 400px', width: '100%' }}>
-                    <div className="search-input-wrapper" style={{ position: 'relative' }}>
-                        <input
-                            type="text"
-                            placeholder="Search by design code..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '1rem 1.5rem',
-                                paddingLeft: '3rem',
-                                borderRadius: 'var(--radius)',
-                                border: '1px solid var(--border-color)',
-                                backgroundColor: 'var(--bg-secondary)',
-                                fontSize: '1rem',
-                                outline: 'none',
-                                transition: 'all 0.3s ease'
-                            }}
-                            onFocus={(e) => e.target.style.borderColor = 'var(--accent-color)'}
-                            onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                <div className="filter-content-scroll" style={{ flex: 1, overflowY: 'auto' }}>
+                    <div className="filter-section">
+                        <GroupList
+                            groups={groups}
+                            selectedGroupIds={selectedGroupIds}
+                            onToggleGroup={handleToggleGroup}
                         />
-                        <span style={{ position: 'absolute', left: '1.2rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>
-                            🔍
-                        </span>
-                        {searchQuery && (
-                            <button
-                                onClick={() => setSearchQuery('')}
+                    </div>
+
+                    <div className="filter-section" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '2rem' }}>
+                        <CategoryList
+                            categories={categories}
+                            selectedCategoryIds={selectedCategoryIds}
+                            onToggleCategory={handleToggleCategory}
+                        />
+                    </div>
+                </div>
+
+                <button className="btn-view-results" onClick={() => setIsFilterOpen(false)}>
+                    VIEW RESULTS
+                </button>
+            </div>
+
+            <header className="page-header" style={{ padding: '4rem 0 2rem 0' }}>
+                <div className="zara-breadcrumb">
+                    <Link to="/">HOME</Link> / <span>CATALOG</span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '2rem' }}>
+                    <div style={{ flex: '1', minWidth: '300px' }}>
+                        <button
+                            className="filter-trigger-btn"
+                            onClick={() => setIsFilterOpen(true)}
+                            style={{ display: 'block', marginBottom: '1.5rem' }}
+                        >
+                            FILTERS
+                        </button>
+                        <h1 className="zara-detail-title" style={{ margin: 0 }}>COLLECTION</h1>
+                        <p className="zara-label" style={{ marginTop: '0.5rem' }}>
+                            {loading ? "REFRESHING CATALOG..." : `TOTAL ${wallpapers.length} WALLPAPERS FOUND`}
+                        </p>
+                    </div>
+
+                    <div className="search-panel" style={{ flex: '0 1 300px', width: '100%' }}>
+                        <div className="search-input-wrapper" style={{ position: 'relative', borderBottom: '1px solid #000' }}>
+                            <input
+                                type="text"
+                                placeholder="SEARCH"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 style={{
-                                    position: 'absolute',
-                                    right: '1rem',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    background: 'none',
+                                    width: '100%',
+                                    padding: '0.5rem 0',
                                     border: 'none',
-                                    cursor: 'pointer',
-                                    fontSize: '1.2rem',
-                                    opacity: 0.5
+                                    backgroundColor: 'transparent',
+                                    fontSize: '0.7rem',
+                                    letterSpacing: '0.1em',
+                                    outline: 'none',
+                                    textTransform: 'uppercase'
                                 }}
-                            >
-                                &times;
-                            </button>
-                        )}
+                            />
+                            {searchQuery && (
+                                <button
+                                    onClick={() => setSearchQuery('')}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '0',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '1rem',
+                                        padding: 0,
+                                        color: '#000'
+                                    }}
+                                >
+                                    &times;
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </header>
 
             <main>
-                <GroupList
-                    groups={groups}
-                    selectedGroupIds={selectedGroupIds}
-                    onToggleGroup={handleToggleGroup}
-                />
-
-                <CategoryList
-                    categories={categories}
-                    selectedCategoryIds={selectedCategoryIds}
-                    onToggleCategory={handleToggleCategory}
-                />
-
-                <section className="catalog-status" style={{ marginBottom: '1.5rem', padding: '0.5rem 0', borderBottom: '1px solid var(--border-color)' }}>
-                    <p style={{ fontWeight: '500' }}>
-                        {loading ? "Refreshing catalog..." : `Total ${wallpapers.length} wallpapers found`}
-                        {selectedGroupIds.length > 0 && ` in ${selectedGroupIds.length} groups`}
-                        {selectedCategoryIds.length > 0 && ` and ${selectedCategoryIds.length} categories`}
-                    </p>
-                </section>
-
                 {loading && wallpapers.length === 0 ? (
-                    <div className="loading">Loading wallpapers...</div>
+                    <div className="loading" style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '2px', padding: '10rem 0', textAlign: 'center' }}>LOADING...</div>
                 ) : (
                     <WallpaperList wallpapers={wallpapers} />
                 )}
