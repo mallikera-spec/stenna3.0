@@ -11,6 +11,12 @@ import '../styles/App.css';
 const WallpaperDetail = () => {
     const { slug } = useParams();
     const [wallpaper, setWallpaper] = useState(null);
+    useEffect(() => {
+        if (wallpaper) {
+            console.log("Wallpaper Object Loaded:", wallpaper);
+            console.log("Videos available:", wallpaper.videos);
+        }
+    }, [wallpaper]);
     const [related, setRelated] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -195,6 +201,8 @@ const WallpaperDetail = () => {
                                 />
                             </div>
                             <div className="gallery-sidebar">
+
+
                                 {wallpaper.images?.map((img, idx) => (
                                     <div
                                         key={idx}
@@ -331,6 +339,17 @@ const WallpaperDetail = () => {
                     {/* Part 3: Residue Gallery Section */}
                     <div className="detail-residue-section">
                         <div className="detail-image-grid">
+                            {wallpaper.videos?.map((vid, idx) => (
+                                <video
+                                    key={`vid-${idx}`}
+                                    src={vid.video_url}
+                                    className="detail-grid-video"
+                                    muted
+                                    loop
+                                    playsInline
+                                    autoPlay
+                                />
+                            ))}
                             {wallpaper.images?.slice(1).map((img, idx) => (
                                 <img
                                     key={idx + 1}

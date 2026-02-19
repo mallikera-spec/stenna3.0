@@ -10,6 +10,7 @@ export const getAllWallpapers = async (req, res) => {
         let query = supabase.from('wallpapers').select(`
             *,
             images:wallpaper_images(*),
+            videos:wallpaper_videos(*),
             categories:wallpaper_categories(category:categories(*)),
             groups:wallpaper_groups(group:category_groups(*))
         `);
@@ -33,6 +34,7 @@ export const getAllWallpapers = async (req, res) => {
             query = supabase.from('wallpapers').select(`
                 *,
                 images:wallpaper_images(*),
+                videos:wallpaper_videos(*),
                 categories:wallpaper_categories!inner(category:categories(*)),
                 groups:wallpaper_groups(group:category_groups(*))
             `).in('wallpaper_categories.category_id', ids);
@@ -45,8 +47,8 @@ export const getAllWallpapers = async (req, res) => {
             const ids = group_id.split(',');
             // If category_id was already present, we need to handle both
             const currentSelect = category_id ?
-                '*, images:wallpaper_images(*), categories:wallpaper_categories!inner(category:categories(*)), groups:wallpaper_groups!inner(group:category_groups(*))' :
-                '*, images:wallpaper_images(*), categories:wallpaper_categories(category:categories(*)), groups:wallpaper_groups!inner(group:category_groups(*))';
+                '*, images:wallpaper_images(*), videos:wallpaper_videos(*), categories:wallpaper_categories!inner(category:categories(*)), groups:wallpaper_groups!inner(group:category_groups(*))' :
+                '*, images:wallpaper_images(*), videos:wallpaper_videos(*), categories:wallpaper_categories(category:categories(*)), groups:wallpaper_groups!inner(group:category_groups(*))';
 
             query = supabase.from('wallpapers').select(currentSelect).in('wallpaper_groups.group_id', ids);
 
@@ -63,7 +65,8 @@ export const getAllWallpapers = async (req, res) => {
             ...w,
             categories: w.categories.map(c => c.category),
             groups: w.groups.map(g => g.group),
-            images: w.images.sort((a, b) => a.position - b.position)
+            images: w.images.sort((a, b) => a.position - b.position),
+            videos: w.videos.sort((a, b) => a.position - b.position)
         }));
 
         // Handle tags (trending/new)
@@ -85,6 +88,7 @@ export const getWallpaperBySlug = async (req, res) => {
         const { data, error } = await supabase.from('wallpapers').select(`
             *,
             images:wallpaper_images(*),
+            videos:wallpaper_videos(*),
             categories:wallpaper_categories(category:categories(*)),
             groups:wallpaper_groups(group:category_groups(*))
         `).eq('slug', slug).single();
@@ -95,7 +99,8 @@ export const getWallpaperBySlug = async (req, res) => {
             ...data,
             categories: data.categories.map(c => c.category),
             groups: data.groups.map(g => g.group),
-            images: data.images.sort((a, b) => a.position - b.position)
+            images: data.images.sort((a, b) => a.position - b.position),
+            videos: data.videos.sort((a, b) => a.position - b.position)
         };
 
         res.status(200).json(formatted);
@@ -105,8 +110,7 @@ export const getWallpaperBySlug = async (req, res) => {
 };
 
 export const createWallpaper = async (req, res) => {
-    // Strip out non-column fields for the main table
-    const { images, category_ids, group_ids, categories, groups, ...wallpaperData } = req.body;
+    const { images, videos, category_ids, group_ids, categories, groups, ...wallpaperData } = req.body;
     try {
         // 1. Create wallpaper entry
         const { data: wallpaper, error: wError } = await supabase
@@ -124,7 +128,19 @@ export const createWallpaper = async (req, res) => {
                 image_url: url,
                 position: index + 1
             }));
-            await supabase.from('wallpaper_images').insert(imageInserts);
+            const { error: imgError } = await supabase.from('wallpaper_images').insert(imageInserts);
+            if (imgError) throw imgError;
+        }
+
+        // 3. Handle Videos
+        if (videos && videos.length > 0) {
+            const videoInserts = videos.map((url, index) => ({
+                wallpaper_id: wallpaper.id,
+                video_url: url,
+                position: index + 1
+            }));
+            const { error: vidError } = await supabase.from('wallpaper_videos').insert(videoInserts);
+            if (vidError) throw vidError;
         }
 
         // 3. Handle Categories
@@ -133,7 +149,8 @@ export const createWallpaper = async (req, res) => {
                 wallpaper_id: wallpaper.id,
                 category_id: id
             }));
-            await supabase.from('wallpaper_categories').insert(catInserts);
+            const { error: catError } = await supabase.from('wallpaper_categories').insert(catInserts);
+            if (catError) throw catError;
         }
 
         // 4. Handle Groups
@@ -142,7 +159,8 @@ export const createWallpaper = async (req, res) => {
                 wallpaper_id: wallpaper.id,
                 group_id: id
             }));
-            await supabase.from('wallpaper_groups').insert(groupInserts);
+            const { error: groupError } = await supabase.from('wallpaper_groups').insert(groupInserts);
+            if (groupError) throw groupError;
         }
 
         res.status(201).json({ message: 'Wallpaper created successfully', id: wallpaper.id });
@@ -155,7 +173,7 @@ export const createWallpaper = async (req, res) => {
 export const updateWallpaper = async (req, res) => {
     const { id } = req.params;
     // Strip out non-column fields for the main table
-    const { images, category_ids, group_ids, categories, groups, ...wallpaperData } = req.body;
+    const { images, videos, category_ids, group_ids, categories, groups, ...wallpaperData } = req.body;
     try {
         // 1. Update basic info
         const { error: wError } = await supabase.from('wallpapers').update(wallpaperData).eq('id', id);
@@ -163,13 +181,30 @@ export const updateWallpaper = async (req, res) => {
 
         // 2. Sync Images
         if (images) {
-            await supabase.from('wallpaper_images').delete().eq('wallpaper_id', id);
+            const { error: delImgError } = await supabase.from('wallpaper_images').delete().eq('wallpaper_id', id);
+            if (delImgError) throw delImgError;
+
             const imageInserts = images.map((url, index) => ({
                 wallpaper_id: id,
                 image_url: url,
                 position: index + 1
             }));
-            await supabase.from('wallpaper_images').insert(imageInserts);
+            const { error: insImgError } = await supabase.from('wallpaper_images').insert(imageInserts);
+            if (insImgError) throw insImgError;
+        }
+
+        // 2.1 Sync Videos
+        if (videos) {
+            const { error: delVidError } = await supabase.from('wallpaper_videos').delete().eq('wallpaper_id', id);
+            if (delVidError) throw delVidError;
+
+            const videoInserts = videos.map((url, index) => ({
+                wallpaper_id: id,
+                video_url: url,
+                position: index + 1
+            }));
+            const { error: insVidError } = await supabase.from('wallpaper_videos').insert(videoInserts);
+            if (insVidError) throw insVidError;
         }
 
         // 3. Sync Categories

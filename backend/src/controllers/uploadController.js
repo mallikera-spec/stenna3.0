@@ -34,9 +34,10 @@ export const uploadWallpaper = async (req, res) => {
         const result = await streamUpload(req.file.buffer);
 
         res.status(200).json({
-            message: 'Image uploaded to Cloudinary successfully',
+            message: 'File uploaded to Cloudinary successfully',
             url: result.secure_url,
-            public_id: result.public_id
+            public_id: result.public_id,
+            resource_type: result.resource_type
         });
     } catch (error) {
         console.error('Cloudinary Upload Error:', error);

@@ -20,6 +20,7 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
         is_active: true,
         quantity: 0,
         images: [], // Array of URLs
+        videos: [], // Array of URLs
         category_ids: [], // Array of UUIDs
         group_ids: [] // Array of UUIDs
     };
@@ -33,6 +34,7 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
                 ...initialState,
                 ...wallpaper,
                 images: wallpaper.images?.map(img => ({ url: img.image_url })) || [],
+                videos: wallpaper.videos?.map(vid => ({ url: vid.video_url })) || [],
                 category_ids: wallpaper.categories?.map(c => c.id) || [],
                 group_ids: wallpaper.groups?.map(g => g.id) || []
             });
@@ -104,10 +106,46 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
         }
     };
 
+    const handleVideoUpload = async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        setUploading(true);
+        try {
+            const uploadPromises = files.map(file => {
+                const data = new FormData();
+                data.append('image', file); // API uses 'image' key but Cloudinary auto-detects
+                return api.post('/upload/wallpaper', data);
+            });
+
+            const results = await Promise.all(uploadPromises);
+            const newVideos = results.map(res => ({
+                url: res.data.url,
+                public_id: res.data.public_id
+            }));
+
+            setFormData(prev => ({
+                ...prev,
+                videos: [...prev.videos, ...newVideos]
+            }));
+        } catch (error) {
+            alert('Failed to upload one or more videos');
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const removeImage = (index) => {
         setFormData(prev => ({
             ...prev,
             images: prev.images.filter((_, i) => i !== index)
+        }));
+    };
+
+    const removeVideo = (index) => {
+        setFormData(prev => ({
+            ...prev,
+            videos: prev.videos.filter((_, i) => i !== index)
         }));
     };
 
@@ -116,6 +154,7 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
         onSave({
             ...formData,
             images: formData.images.map(img => img.url), // Send only URLs to the backend
+            videos: formData.videos.map(vid => vid.url), // Send only URLs to the backend
             price: formData.price ? parseFloat(formData.price) : null,
             quantity: formData.quantity ? parseInt(formData.quantity) : 0,
             roll_width: formData.roll_width ? parseFloat(formData.roll_width) : null,
@@ -212,6 +251,25 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
                                         {uploading ? <Loader2 className="animate-spin" /> : <Plus size={24} />}
                                         <span>{uploading ? 'Uploading...' : 'Add Image'}</span>
                                         <input type="file" multiple onChange={handleImageUpload} hidden accept="image/*" disabled={uploading} />
+                                    </label>
+                                </div>
+                            </div>
+
+                            <h3 className="section-title mt-4">Videos</h3>
+                            <div className="gallery-manager">
+                                <div className="gallery-grid">
+                                    {formData.videos.map((vid, idx) => (
+                                        <div key={idx} className="gallery-item">
+                                            <video src={vid.url} className="w-full h-full object-cover" />
+                                            <button type="button" className="remove-img" onClick={() => removeVideo(idx)}>
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <label className="add-image-card">
+                                        {uploading ? <Loader2 className="animate-spin" /> : <Plus size={24} />}
+                                        <span>{uploading ? 'Uploading...' : 'Add Video'}</span>
+                                        <input type="file" multiple onChange={handleVideoUpload} hidden accept="video/*" disabled={uploading} />
                                     </label>
                                 </div>
                             </div>
