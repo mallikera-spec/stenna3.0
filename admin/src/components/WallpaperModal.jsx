@@ -18,6 +18,7 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
         brand: '',
         country: '',
         is_active: true,
+        quantity: 0,
         images: [], // Array of URLs
         category_ids: [], // Array of UUIDs
         group_ids: [] // Array of UUIDs
@@ -116,6 +117,7 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
             ...formData,
             images: formData.images.map(img => img.url), // Send only URLs to the backend
             price: formData.price ? parseFloat(formData.price) : null,
+            quantity: formData.quantity ? parseInt(formData.quantity) : 0,
             roll_width: formData.roll_width ? parseFloat(formData.roll_width) : null,
             roll_height: formData.roll_height ? parseFloat(formData.roll_height) : null
         });
@@ -156,6 +158,10 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
                                 <div className="field">
                                     <label>Roll Height (m)</label>
                                     <input name="roll_height" type="number" value={formData.roll_height} onChange={handleChange} placeholder="10" />
+                                </div>
+                                <div className="field">
+                                    <label>Stock Quantity</label>
+                                    <input name="quantity" type="number" value={formData.quantity} onChange={handleChange} placeholder="0" />
                                 </div>
                             </div>
 

@@ -9,7 +9,8 @@ import {
   Mail,
   Menu,
   X,
-  BookOpen
+  BookOpen,
+  Boxes
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
@@ -28,6 +29,7 @@ const Sidebar = () => {
     { title: 'Dealers', icon: <Users size={20} />, path: '/dealers', slug: 'dealers' },
     { title: 'Books', icon: <BookOpen size={20} />, path: '/books', slug: 'books' },
     { title: 'Leads', icon: <Mail size={20} />, path: '/leads', slug: 'leads' },
+    { title: 'Inventory', icon: <Boxes size={20} />, path: '/inventory', slug: 'inventory' },
     { title: 'Users', icon: <Users size={20} />, path: '/users', slug: 'users' },
     { title: 'Store Info', icon: <Settings size={20} />, path: '/store', slug: 'settings' },
   ];

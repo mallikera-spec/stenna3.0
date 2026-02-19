@@ -221,3 +221,67 @@ export const toggleStatus = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+export const bulkUpdateQuantity = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const results = [];
+        const stream = Readable.from(req.file.buffer);
+
+        stream
+            .pipe(csv())
+            .on('data', (data) => results.push(data))
+            .on('end', async () => {
+                const summary = {
+                    total: results.length,
+                    updated: 0,
+                    failed: 0,
+                    errors: []
+                };
+
+                for (const row of results) {
+                    // Handle various possible column names
+                    const designCode = row['design code'] || row['design_code'] || row['Design Code'] || row['design_code'];
+                    const quantity = parseInt(row['quantity'] || row['Quantity']);
+
+                    if (!designCode || isNaN(quantity)) {
+                        summary.failed++;
+                        summary.errors.push({ row, error: 'Missing design code or invalid quantity' });
+                        continue;
+                    }
+
+                    try {
+                        const { data, error } = await supabase
+                            .from('wallpapers')
+                            .update({ quantity: quantity })
+                            .eq('design_code', designCode)
+                            .select();
+
+                        if (error) throw error;
+
+                        if (data && data.length > 0) {
+                            summary.updated++;
+                        } else {
+                            summary.failed++;
+                            summary.errors.push({ designCode, error: 'Design code not found' });
+                        }
+                    } catch (err) {
+                        summary.failed++;
+                        summary.errors.push({ designCode, error: err.message });
+                    }
+                }
+
+                res.status(200).json({
+                    message: 'Bulk update processed',
+                    summary
+                });
+            });
+    } catch (error) {
+        console.error('Bulk Update Error:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+

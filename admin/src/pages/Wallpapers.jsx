@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Plus,
     Search,
@@ -7,6 +7,7 @@ import {
     Trash2,
     Eye,
     Download,
+    Upload,
     X,
     RotateCcw
 } from 'lucide-react';
@@ -296,6 +297,7 @@ const Wallpapers = () => {
                             <th>Name</th>
                             <th>Category</th>
                             <th>Price</th>
+                            <th>Stock</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -333,6 +335,11 @@ const Wallpapers = () => {
                                             </div>
                                         </td>
                                         <td>Rs {wallpaper.price || '0'}</td>
+                                        <td>
+                                            <span className={`stock-level ${wallpaper.quantity > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                                                {wallpaper.quantity || 0}
+                                            </span>
+                                        </td>
                                         <td>
                                             <span className={`badge ${wallpaper.is_active ? 'badge-success' : 'badge-danger'}`}>
                                                 {wallpaper.is_active ? 'Active' : 'Hidden'}
@@ -467,6 +474,9 @@ const Wallpapers = () => {
                 .p-btn:disabled { opacity: 0.5; cursor: not-allowed; }
                 .page-numbers { display: flex; align-items: center; gap: 0.25rem; }
                 .p-num { min-width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: none; border: 1px solid transparent; border-radius: 0.5rem; color: var(--text-muted); font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+                .stock-level { font-weight: 600; font-size: 0.875rem; }
+                .in-stock { color: var(--success); }
+                .out-of-stock { color: var(--danger); }
                 .p-num:hover { color: var(--primary); background: var(--bg-hover); }
                 .p-num.active { background: var(--primary); color: white; border-color: var(--primary); }
                 .dots { color: var(--text-dim); padding: 0 0.25rem; }
