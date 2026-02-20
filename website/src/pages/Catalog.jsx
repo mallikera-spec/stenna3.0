@@ -213,11 +213,11 @@ const Catalog = () => {
                 <div className="col-tools-panel">
                     {/* Search Section */}
                     <div className="tool-section">
-                        <h3>SEARCH</h3>
+                        {/* <h3>SEARCH</h3> */}
                         <div style={{ position: 'relative', borderBottom: '1px solid #000' }}>
                             <input
                                 type="text"
-                                placeholder="KEYWORDS..."
+                                placeholder="Search..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 style={{
