@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Menu, X, Sparkles, Layout } from 'lucide-react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { X, Sparkles, Layout } from 'lucide-react'
 import './styles/App.css'
 import AppRoutes from './routes/AppRoutes'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -13,6 +13,7 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const getInitials = (user) => {
     const name = user.user_metadata?.full_name || user.email;
@@ -47,8 +48,11 @@ function Navbar() {
     <>
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
-          <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0', marginLeft: '-12px' }}>
-            <Menu size={64} strokeWidth={1} />
+          <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0' }}>
+            <div className="zara-hamburger">
+              <div className="bar"></div>
+              <div className="bar"></div>
+            </div>
           </button>
 
           {/* <div className="logo">
@@ -58,15 +62,15 @@ function Navbar() {
           <div className="nav-links desktop-only">
             {/* Keeping some minimal links or just icons for a Zara feel */}
             <Link to="/catalog" className="nav-item">CATALOG</Link>
-            <Link to="/try-it-on" className="nav-item nav-usp">
+            {/* <Link to="/try-it-on" className="nav-item nav-usp">
               <Sparkles size={14} className="usp-icon" /> TRY IT ON
-            </Link>
+            </Link> */}
             <Link to="/profile/enquiries" className="nav-item">
               ENQUIRIES
             </Link>
-            <Link to="/ai-recommendations" className="nav-item nav-usp">
+            {/* <Link to="/ai-recommendations" className="nav-item nav-usp">
               <Sparkles size={14} className="usp-icon" /> AI RECOMMEND
-            </Link>
+            </Link> */}
             {/* <Link to="/showcase" className="nav-item">SHOWCASE</Link> */}
             {user ? (
               <div className="user-nav-group" ref={dropdownRef}>
@@ -100,6 +104,27 @@ function Navbar() {
               </div>
             ) : (
               <Link to="/login" className="nav-item">LOG IN</Link>
+            )}
+          </div>
+
+          <div className="mobile-tools mobile-only">
+            {(location.pathname.includes('/catalog') || location.pathname.includes('/wallpaper/')) && (
+              <>
+                {location.pathname.includes('/catalog') && (
+                  <button
+                    className="mobile-filter-btn"
+                    onClick={() => window.dispatchEvent(new CustomEvent('toggle-catalog-filter'))}
+                  >
+                    FILTERS
+                  </button>
+                )}
+                <button
+                  className="mobile-search-btn"
+                  onClick={() => window.dispatchEvent(new CustomEvent('toggle-catalog-search'))}
+                >
+                  <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>SEARCH</span>
+                </button>
+              </>
             )}
           </div>
         </div>

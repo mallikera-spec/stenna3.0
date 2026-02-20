@@ -1,13 +1,13 @@
 /* Catalog and Home Multi-column Layout */
 
 .desktop-layout-container {
-    display: grid;
-    grid-template-columns: 200px 1fr 280px;
-    gap: 4rem;
-    padding: 0 1rem;
-    height: calc(100vh - var(--navbar-height) - 2rem);
+    display: flex;
+    gap: 2.5rem;
+    padding: 0 1.5% !important;
+    height: calc(100vh - var(--navbar-height));
     align-items: flex-start;
     overflow: hidden;
+    margin-top: 0 !important;
 }
 
 .col-main-content {
@@ -15,6 +15,7 @@
     overflow-y: auto;
     padding-right: 1.5rem;
     padding-top: 0;
+    flex: 1;
 }
 
 /* Hide scrollbar for clean look but keep functionality */
@@ -34,7 +35,13 @@
     .desktop-layout-container {
         grid-template-columns: 1fr;
         display: block;
-        padding: 1rem 5%;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .col-main-content {
+        padding: 0 !important;
+        margin: 0 !important;
     }
 }
 
@@ -58,9 +65,21 @@
 
 /* Column 1: Filter Trigger */
 .col-filter-trigger {
-    padding-top: 2rem;
+    padding-top: 0 !important;
     position: sticky;
     top: 0;
+    flex: 0 0 auto;
+    min-width: 140px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.desktop-layout-container.is-detail-view .col-filter-trigger {
+    min-width: 98px;
+    /* 30% shrink from 140px */
+}
+
+.desktop-layout-container.is-detail-view .col-filter-trigger:hover {
+    min-width: 140px;
 }
 
 .filter-word-btn {
@@ -81,7 +100,7 @@
 
 /* Column 3: Tools Panel */
 .col-tools-panel {
-    padding-top: 2rem;
+    padding-top: 0 !important;
     position: sticky;
     top: 0;
     display: flex;
@@ -90,13 +109,25 @@
     border-left: 1px solid #f0f0f0;
     padding-left: 3rem;
     white-space: nowrap;
+    flex: 0 0 auto;
+    min-width: 240px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.desktop-layout-container.is-detail-view .col-tools-panel {
+    min-width: 168px;
+    /* 30% shrink from 240px */
+    padding-left: 2rem;
+}
+
+.desktop-layout-container.is-detail-view .col-tools-panel:hover {
+    min-width: 240px;
+    padding-left: 3rem;
 }
 
 @media (max-width: 1024px) {
     .col-tools-panel {
-        border-left: none;
-        padding-left: 0;
-        margin-top: 4rem;
+        display: none !important;
     }
 }
 
@@ -260,13 +291,13 @@
 
 .detail-residue-section {
     grid-area: residue;
-    padding: 0;
+    padding: 1rem;
 }
 
 .detail-image-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2px;
+    gap: 1rem;
     padding-top: 0;
 }
 
@@ -281,7 +312,7 @@
     grid-area: info;
     display: flex;
     flex-direction: column;
-    padding: 4rem 3rem;
+    padding: 0 1rem 4rem 1rem !important;
     background: #fff;
     scrollbar-width: none;
 }
@@ -398,18 +429,20 @@
 .related-zara-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 1rem;
+    gap: 3rem;
 }
 
 @media (max-width: 1400px) {
     .related-zara-grid {
         grid-template-columns: repeat(4, 1fr);
+        gap: 2.5rem;
     }
 }
 
 @media (max-width: 1024px) {
     .related-zara-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
     }
 }
 
@@ -423,7 +456,8 @@
 
 .related-img-container {
     width: 100%;
-    aspect-ratio: 3/4;
+    aspect-ratio: 2/3;
+    /* Enforce 3:2 Height:Width ratio */
     overflow: hidden;
     background: #f7f7f7;
 }
@@ -446,9 +480,11 @@
 }
 
 .related-name {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    line-height: 1.2;
+    opacity: 0.8;
 }
 
 .related-price {
@@ -461,7 +497,7 @@
     position: fixed;
     bottom: 0;
     right: 0;
-    width: 25%;
+    width: 35%;
     background: transparent;
     padding: 0.5rem;
     display: flex;
@@ -477,27 +513,34 @@
 
 .carousel-track-v3 {
     display: flex;
-    gap: 10px;
+    gap: 4px;
+    /* Tight gap for slat effect */
+    align-items: flex-end;
 }
 
 .carousel-item-v3 {
-    width: 45px;
-    height: 65px;
+    width: 12px;
+    /* Very narrow slats */
+    height: 60px;
+    /* Base height */
     flex-shrink: 0;
     cursor: pointer;
     opacity: 1;
-    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Fully opaque state */
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .carousel-item-v3.active {
-    transform: translateY(-5px);
+    height: 90px;
+    /* Active slat is much taller */
+    opacity: 1;
 }
 
 .carousel-item-v3 img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border: 1px solid transparent;
+    border: 1px solid;
 }
 
 .carousel-item-v3.active img {
@@ -508,9 +551,9 @@
     .detail-layout-container {
         grid-template-columns: 1fr;
         grid-template-areas: none;
-        padding: 0;
+        padding: 0 !important;
         display: block;
-        /* Fallback to block for simple stacking */
+        margin: 0 !important;
     }
 
     .detail-hero-section,
@@ -520,25 +563,32 @@
         position: static;
         width: 100%;
         height: auto;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
     .detail-hero-image {
         height: 65vh;
         object-fit: cover;
+        width: 100%;
     }
 
     .detail-grid-image {
         aspect-ratio: auto;
         height: 60vh;
         object-fit: cover;
+        width: 100%;
     }
 
     .detail-image-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
+        gap: 2px;
+        padding: 0 !important;
     }
 
     .detail-info-section {
-        padding: 1.5rem 1rem;
+        padding: 1.5rem 1rem !important;
+        /* Keep text padding but remove top/bottom extra */
     }
 
     .floating-product-bar-v3 {

@@ -52,6 +52,21 @@ main,
   transition: opacity 0.2s;
 }
 
+/* Custom Zara 2-bar Hamburger */
+.zara-hamburger {
+  width: 45px;
+  height: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.zara-hamburger .bar {
+  width: 100%;
+  height: 1px;
+  background-color: #000;
+}
+
 .navbar {
   position: fixed;
   top: 0;
@@ -320,6 +335,43 @@ main,
   height: auto;
 }
 
+.zoom-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  text-transform: uppercase;
+  z-index: 20000;
+  border-radius: 20px;
+}
+
+.zoom-close-btn {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 20001;
+  backdrop-filter: blur(8px);
+}
+
 /* --- Gallery Modal --- */
 .gallery-modal {
   position: fixed;
@@ -370,9 +422,9 @@ main,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
   padding: 0;
-  /* Remove padding for full-screen feel */
+  overflow: visible;
+  position: relative;
 }
 
 .gallery-main img {
@@ -948,10 +1000,10 @@ main,
   .detail-info::-webkit-scrollbar {
     display: none;
   }
+}
 
-  .carousel-item {
-    flex: 0 0 220px;
-  }
+.carousel-item {
+  flex: 0 0 220px;
 }
 
 /* Zara-Style Full Screen Menu */
@@ -963,16 +1015,15 @@ main,
   height: 100vh;
   background: white;
   z-index: 2000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translateY(-20px);
+  opacity: 1;
+  /* Always opaque during transition */
+  visibility: visible;
+  transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  transform: translateX(-100%);
 }
 
 .zara-menu-overlay.open {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
 .zara-menu-container {
@@ -992,6 +1043,13 @@ main,
   padding-left: 1rem;
   /* Match nav padding */
   margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .zara-menu-header {
+    padding-left: 5%;
+    /* Aligns with mob toggle */
+  }
 }
 
 .zara-logo-large {
@@ -1014,6 +1072,30 @@ main,
   padding: 0;
   color: #000;
   transition: opacity 0.2s;
+}
+
+.zara-close-icon {
+  width: 45px;
+  height: 45px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zara-close-icon .bar {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background-color: #000;
+}
+
+.zara-close-icon .bar:first-child {
+  transform: rotate(45deg);
+}
+
+.zara-close-icon .bar:last-child {
+  transform: rotate(-45deg);
 }
 
 .zara-close-btn:hover {
@@ -1455,7 +1537,7 @@ main,
   letter-spacing: 0.05em;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .nav-container {
     justify-content: center;
     /* Center logo by default on mobile */
@@ -1466,6 +1548,7 @@ main,
   .mobile-menu-toggle {
     position: absolute;
     left: 5%;
+    /* Aligns with CatalogLayout.css padding */
   }
 
   .logo a {
@@ -1476,6 +1559,93 @@ main,
   .desktop-only {
     display: none !important;
   }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .mobile-tools {
+    position: absolute;
+    right: 5%;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .mobile-filter-btn,
+  .mobile-search-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: 400;
+  }
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* Mobile Search Bar Drawer */
+.mobile-search-bar {
+  position: fixed;
+  top: 60px;
+  /* Below mobile navbar */
+  left: 0;
+  width: 100%;
+  background: #fff;
+  z-index: 999;
+  padding: 0.5rem 5% 1.5rem 5%;
+  transform: translateY(-100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: hidden;
+}
+
+.mobile-search-bar.open {
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+  border-bottom: 1px solid #000;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-search-input {
+  flex: 1;
+  border: none;
+  padding: 1rem 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  outline: none;
+  font-family: inherit;
+  background: transparent;
+}
+
+.search-label-right {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #999;
+  text-transform: uppercase;
+  margin-left: 1rem;
+  white-space: nowrap;
+}
+
+.btn-close-search {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem 0 0.5rem 1rem;
+  line-height: 1;
+  color: #999;
 }
 
 /* Zara Filter Drawer Styles */

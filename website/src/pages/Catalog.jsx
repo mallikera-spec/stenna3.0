@@ -21,6 +21,7 @@ const Catalog = () => {
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [loading, setLoading] = useState(true);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const [allCategories, setAllCategories] = useState([]);
 
@@ -41,6 +42,17 @@ const Catalog = () => {
             }
         };
         loadInitialData();
+
+        const handleToggleFilter = () => setIsFilterOpen(prev => !prev);
+        const handleToggleSearch = () => setIsSearchOpen(prev => !prev);
+
+        window.addEventListener('toggle-catalog-filter', handleToggleFilter);
+        window.addEventListener('toggle-catalog-search', handleToggleSearch);
+
+        return () => {
+            window.removeEventListener('toggle-catalog-filter', handleToggleFilter);
+            window.removeEventListener('toggle-catalog-search', handleToggleSearch);
+        };
     }, []);
 
     // Sync URL params to state
@@ -144,6 +156,22 @@ const Catalog = () => {
                 <button className="btn-view-results" onClick={() => setIsFilterOpen(false)}>
                     VIEW RESULTS
                 </button>
+            </div>
+
+            {/* Mobile Search Bar Section */}
+            <div className={`mobile-search-bar ${isSearchOpen ? 'open' : ''}`}>
+                <div className="search-input-wrapper">
+                    <input
+                        type="text"
+                        placeholder="SEARCH ARTWORKS..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="mobile-search-input"
+                        autoFocus={isSearchOpen}
+                    />
+                    <span className="search-label-right">SEARCH</span>
+                    <button className="btn-close-search" onClick={() => setIsSearchOpen(false)}>&times;</button>
+                </div>
             </div>
 
             <div className="desktop-layout-container" style={{ paddingTop: '0' }}>
