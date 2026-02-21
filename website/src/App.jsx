@@ -110,14 +110,12 @@ function Navbar() {
           <div className="mobile-tools mobile-only">
             {(location.pathname.includes('/catalog') || location.pathname.includes('/wallpaper/')) && (
               <>
-                {location.pathname.includes('/catalog') && (
-                  <button
-                    className="mobile-filter-btn"
-                    onClick={() => window.dispatchEvent(new CustomEvent('toggle-catalog-filter'))}
-                  >
-                    FILTERS
-                  </button>
-                )}
+                <button
+                  className="mobile-filter-btn"
+                  onClick={() => window.dispatchEvent(new CustomEvent('toggle-catalog-filter'))}
+                >
+                  FILTERS
+                </button>
                 <button
                   className="mobile-search-btn"
                   onClick={() => window.dispatchEvent(new CustomEvent('toggle-catalog-search'))}
@@ -150,16 +148,16 @@ function App() {
           <AppRoutes />
         </main>
 
-        <footer style={{ marginTop: '4rem', padding: '2rem 5%', borderTop: '1px solid var(--border-color)', textAlign: 'center', color: 'var(--text-secondary)', width: '100%' }}>
+        {/* <footer style={{ marginTop: '4rem', padding: '2rem 5%', borderTop: '1px solid var(--border-color)', textAlign: 'center', color: 'var(--text-secondary)', width: '100%' }}>
           <div className="footer-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <p>&copy; 2026 Wallpaper Catalog. All rights reserved.</p>
-            {/* <div className="footer-links" style={{ display: 'flex', gap: '1.5rem' }}>
+            <div className="footer-links" style={{ display: 'flex', gap: '1.5rem' }}>
               <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Privacy Policy</a>
               <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Terms of Service</a>
               <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Contact Us</a>
-            </div> */}
+            </div>
           </div>
-        </footer>
+        </footer> */}
       </div>
     </AuthProvider>
   )

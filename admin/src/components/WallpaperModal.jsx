@@ -22,7 +22,13 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
         images: [], // Array of URLs
         videos: [], // Array of URLs
         category_ids: [], // Array of UUIDs
-        group_ids: [] // Array of UUIDs
+        group_ids: [], // Array of UUIDs
+        tagline: '',
+        story: '',
+        customer_fit: [], // Array of strings
+        mood_tags: [], // Array of strings
+        ideal_for: [], // Array of strings
+        whatsapp_line: ''
     };
 
     const [formData, setFormData] = useState(initialState);
@@ -158,7 +164,11 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
             price: formData.price ? parseFloat(formData.price) : null,
             quantity: formData.quantity ? parseInt(formData.quantity) : 0,
             roll_width: formData.roll_width ? parseFloat(formData.roll_width) : null,
-            roll_height: formData.roll_height ? parseFloat(formData.roll_height) : null
+            roll_height: formData.roll_height ? parseFloat(formData.roll_height) : null,
+            // Ensure lists are sent as arrays
+            customer_fit: Array.isArray(formData.customer_fit) ? formData.customer_fit : [],
+            mood_tags: Array.isArray(formData.mood_tags) ? formData.mood_tags : [],
+            ideal_for: Array.isArray(formData.ideal_for) ? formData.ideal_for : []
         });
     };
 
@@ -314,7 +324,53 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
 
                     <div className="field full mt-2">
                         <label>Description (Optional)</label>
-                        <textarea name="description" value={formData.description} onChange={handleChange} rows="3" placeholder="Tell more about this wallpaper..." />
+                        <textarea name="description" value={formData.description} onChange={handleChange} rows="2" placeholder="Tell more about this wallpaper..." />
+                    </div>
+
+                    <div className="form-section full-width mt-4">
+                        <h3 className="section-title">Story-Driven Information (Premium)</h3>
+                        <div className="form-grid">
+                            <div className="field full">
+                                <label>Tagline (e.g. For homes that want warmth...)</label>
+                                <input name="tagline" value={formData.tagline} onChange={handleChange} placeholder="The punchy one-liner header" />
+                            </div>
+                            <div className="field full">
+                                <label>The Story (Narrative description)</label>
+                                <textarea name="story" value={formData.story} onChange={handleChange} rows="4" placeholder="Describe the inspiration, soul and feel of this wallpaper..." />
+                            </div>
+                            <div className="field full">
+                                <label>Why Customers Love It (Indian Home Fit) - One per line</label>
+                                <textarea
+                                    name="customer_fit"
+                                    value={Array.isArray(formData.customer_fit) ? formData.customer_fit.join('\n') : ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, customer_fit: e.target.value.split('\n').filter(Boolean) }))}
+                                    rows="3"
+                                    placeholder="Works beautifully with wooden furniture&#10;Enhances warm yellow lighting..."
+                                />
+                            </div>
+                            <div className="field half">
+                                <label>Mood Tags (Comma separated)</label>
+                                <input
+                                    name="mood_tags"
+                                    value={Array.isArray(formData.mood_tags) ? formData.mood_tags.join(', ') : ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, mood_tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
+                                    placeholder="Warm, Earthy, Timeless..."
+                                />
+                            </div>
+                            <div className="field half">
+                                <label>Ideal For (Comma separated)</label>
+                                <input
+                                    name="ideal_for"
+                                    value={Array.isArray(formData.ideal_for) ? formData.ideal_for.join(', ') : ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, ideal_for: e.target.value.split(',').map(s => s.trim()).filter(Boolean) }))}
+                                    placeholder="Master Bedroom, Living Room..."
+                                />
+                            </div>
+                            <div className="field full">
+                                <label>10-Second Decision Line (WhatsApp Punchline)</label>
+                                <textarea name="whatsapp_line" value={formData.whatsapp_line} onChange={handleChange} rows="2" placeholder="This design is for people who want..." />
+                            </div>
+                        </div>
                     </div>
 
                     <footer className="modal-footer">
@@ -382,6 +438,23 @@ const WallpaperModal = ({ isOpen, onClose, onSave, wallpaper, categories, groups
                 @media (max-width: 900px) {
                     .modal-body-grid { grid-template-columns: 1fr; }
                     .modal-content.wide { max-width: 600px; }
+                }
+
+                .form-section.full-width {
+                    grid-column: span 1;
+                }
+                
+                .field.half {
+                    grid-column: span 1;
+                }
+
+                @media (min-width: 900px) {
+                    .form-section.full-width {
+                        grid-column: span 2;
+                    }
+                    .field.half {
+                        grid-column: span 1;
+                    }
                 }
             `}</style>
 

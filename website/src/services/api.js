@@ -108,4 +108,5 @@ export const fetchAiRecommendations = async (answers) => {
     });
     if (!response.ok) throw new Error('Failed to fetch AI recommendations');
     return response.json();
+    return response.json();
 };

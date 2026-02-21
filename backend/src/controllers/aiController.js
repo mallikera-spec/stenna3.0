@@ -23,32 +23,80 @@ export const getRecommendations = async (req, res) => {
         let query = supabase.from('wallpapers').select(`
             *,
             images:wallpaper_images(*),
-            categories:wallpaper_categories!inner(category:categories(*))
-        `);
+            categories:wallpaper_categories(category:categories(*))
+        `).eq('is_active', true);
 
-        // Apply filters
-        // Priority 1: Filter by category if AI suggested one
-        if (category) {
-            query = query.ilike('wallpaper_categories.category.name', `%${category}%`);
+        // --- MATCH STRATEGY ---
+
+        // Apply Mood Tags filter
+        let products = [];
+        let error = null;
+
+        if (tags && tags.length > 0 || aiAnalysis.roomTypeMatch) {
+            try {
+                // Normalize for database (everything lowercase)
+                const normalizedRoom = aiAnalysis.roomTypeMatch?.toLowerCase();
+                const normalizedTags = (tags || []).map(t => t.toLowerCase());
+
+                // Try precision matching first
+                let precisionQuery = supabase.from('wallpapers').select(`
+                    *,
+                    images:wallpaper_images(*),
+                    categories:wallpaper_categories(category:categories(*))
+                `).eq('is_active', true);
+
+                // Room Type Filter (check both original and lowercase to be safe)
+                if (normalizedRoom) {
+                    const roomFilter = `ideal_for.cs.["${normalizedRoom}"],ideal_for.cs.["${aiAnalysis.roomTypeMatch}"]`;
+                    precisionQuery = precisionQuery.or(roomFilter);
+                }
+
+                // Mood Tags Filter
+                if (normalizedTags.length > 0) {
+                    const moodFilters = normalizedTags.map(tag => `mood_tags.cs.["${tag}"]`).join(',');
+                    precisionQuery = precisionQuery.or(moodFilters);
+                }
+
+                const result = await precisionQuery.limit(6);
+                products = result.data || [];
+                error = result.error;
+            } catch (err) {
+                console.warn("Stenna AI: Precision match failed, falling back...", err.message);
+            }
         }
 
-        // Priority 2: Use tags for keyword matching
-        if (tags && tags.length > 0) {
-            const filterParts = tags.map(tag =>
-                `name.ilike.%${tag}%,description.ilike.%${tag}%,design_code.ilike.%${tag}%`
-            );
-            query = query.or(filterParts.join(','));
-        }
+        // --- FALLBACK SEARCH ---
+        // If no products found or precision failed, do a broad keyword search
+        if (!products.length) {
+            console.log("Stenna AI: Broadening search to keywords...");
+            let fallbackQuery = supabase.from('wallpapers').select(`
+                *,
+                images:wallpaper_images(*),
+                categories:wallpaper_categories(category:categories(*))
+            `).eq('is_active', true);
 
-        const { data: products, error } = await query.limit(6);
+            // Broaden the search set
+            const searchTags = [...new Set([...(tags || []), category, answers.roomType])].filter(Boolean);
+            if (searchTags.length > 0) {
+                const filterParts = searchTags.map(tag =>
+                    `name.ilike.%${tag}%,description.ilike.%${tag}%,design_code.ilike.%${tag}%`
+                );
+                fallbackQuery = fallbackQuery.or(filterParts.join(','));
+            }
+
+            const fallbackResult = await fallbackQuery.limit(6);
+            products = fallbackResult.data || [];
+            error = fallbackResult.error;
+        }
 
         if (error) throw error;
 
         res.status(200).json({
             summary: summary,
-            description: description || '',
+            description: products.length > 0 ? (description || '') : "We couldn't find an exact match for your specific preferences, but here are some popular designs you might love.",
             tags: tags,
-            recommendations: products
+            recommendations: products,
+            is_fallback: products.length === 0 || !aiAnalysis.roomTypeMatch
         });
 
     } catch (error) {

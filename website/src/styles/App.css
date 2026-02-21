@@ -1,5 +1,5 @@
 :root {
-  --navbar-height: 80px;
+  --navbar-height: 60px;
 }
 
 body {
@@ -8,7 +8,8 @@ body {
 
 @media (max-width: 1024px) {
   body {
-    padding-top: 0;
+    padding-top: 60px;
+    /* Synchronized with mobile navbar height */
   }
 }
 
@@ -72,9 +73,11 @@ main,
   top: 0;
   left: 0;
   width: 100%;
-  background: transparent;
-  backdrop-filter: none;
-  border-bottom: none;
+  background: #fff;
+  /* Solid background to prevent content visibility underneath */
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  /* subtle separation */
   z-index: 1000;
   transition: all 0.3s ease;
   height: var(--navbar-height);
@@ -1314,6 +1317,27 @@ main,
 
   .zara-group-list li a {
     font-size: 1.8rem;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .zara-menu-back-btn {
+    display: block;
+    background: none;
+    border: none;
+    padding: 0 0 2rem 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .zara-menu-back-btn:hover {
+    color: #000;
   }
 }
 

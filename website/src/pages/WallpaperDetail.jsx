@@ -45,7 +45,9 @@ const WallpaperDetail = () => {
     const [isTimeLapsing, setIsTimeLapsing] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
     const prevSlugRef = useRef(slug);
+    const mainContentRef = useRef(null);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
@@ -56,6 +58,12 @@ const WallpaperDetail = () => {
 
     useEffect(() => {
         const loadData = async () => {
+            // Scroll to top immediately when slug changes (e.g., navigation from suggested wallpapers)
+            window.scrollTo(0, 0);
+            if (mainContentRef.current) {
+                mainContentRef.current.scrollTo(0, 0);
+            }
+
             const cachedProduct = productList.find(p => p.slug === slug);
             const prevSlug = prevSlugRef.current;
             prevSlugRef.current = slug;
@@ -156,8 +164,13 @@ const WallpaperDetail = () => {
         window.scrollTo(0, 0);
 
         const handleToggleSearch = () => setIsSearchOpen(prev => !prev);
+        const handleToggleFilter = () => setIsFilterOpen(prev => !prev);
         window.addEventListener('toggle-catalog-search', handleToggleSearch);
-        return () => window.removeEventListener('toggle-catalog-search', handleToggleSearch);
+        window.addEventListener('toggle-catalog-filter', handleToggleFilter);
+        return () => {
+            window.removeEventListener('toggle-catalog-search', handleToggleSearch);
+            window.removeEventListener('toggle-catalog-filter', handleToggleFilter);
+        };
     }, [slug]);
 
     const handleToggleGroup = (groupId) => {
@@ -223,7 +236,7 @@ const WallpaperDetail = () => {
     const firstCategoryId = wallpaper.categories?.[0]?.id;
 
     return (
-        <div className="catalog-page fade-in-up">
+        <div className="catalog-page fade-in-up" style={{ paddingTop: 0 }}>
             {/* Mobile Search Bar Section */}
             <div className={`mobile-search-bar ${isSearchOpen ? 'open' : ''}`}>
                 <div className="search-input-wrapper">
@@ -237,11 +250,34 @@ const WallpaperDetail = () => {
                         autoFocus={isSearchOpen}
                     />
                     <span className="search-label-right">SEARCH</span>
-                    <button className="btn-close-search" onClick={() => setIsSearchOpen(false)}>&times;</button>
                 </div>
             </div>
 
-            <div className="desktop-layout-container is-detail-view" style={{ paddingTop: '0' }}>
+            {/* Filter Overlay & Drawer */}
+            <div className={`filter-overlay ${isFilterOpen ? 'open' : ''}`} onClick={() => setIsFilterOpen(false)}></div>
+            <div className={`filter-drawer ${isFilterOpen ? 'open' : ''}`}>
+                <div className="filter-header">
+                    <button className="btn-close-filter" onClick={() => setIsFilterOpen(false)}>&times;</button>
+                    <h2 className="zara-label">FILTERS</h2>
+                </div>
+
+                <div className="filter-content-scroll" style={{ flex: 1, overflowY: 'auto' }}>
+                    <div className="filter-section">
+                        <GroupList groups={groups} selectedGroupIds={selectedGroupIds} onToggleGroup={(id) => {
+                            handleToggleGroup(id);
+                            setIsFilterOpen(false);
+                        }} />
+                    </div>
+                    <div className="filter-section" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '2rem' }}>
+                        <CategoryList categories={allCategories} selectedCategoryIds={selectedCategoryIds} onToggleCategory={(id) => {
+                            handleToggleCategory(id);
+                            setIsFilterOpen(false);
+                        }} />
+                    </div>
+                </div>
+            </div>
+
+            <div className="desktop-layout-container is-detail-view" style={{ paddingTop: '0', marginTop: '0' }}>
                 {/* COLUMN 1: FILTER TRIGGER (CATALOG NAV) */}
                 <div className="col-filter-trigger desktop-only" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div className="zara-breadcrumb" style={{ fontSize: '0.6rem', marginBottom: '0.5rem' }}>
@@ -258,12 +294,12 @@ const WallpaperDetail = () => {
                 </div>
 
                 {/* COLUMN 2: MAIN DETAIL CONTENT */}
-                <div className="col-main-content">
+                <div ref={mainContentRef} className="col-main-content" style={{ paddingTop: 0, marginTop: 0 }}>
                     <div
                         className="detail-page"
                         onTouchStart={handleTouchStart}
                         onTouchEnd={handleTouchEnd}
-                        style={{ touchAction: 'pan-y' }} // Allow vertical scroll, capture horizontal
+                        style={{ touchAction: 'pan-y', paddingTop: 0, marginTop: 0 }}
                     >
                         <VisualizerModal
                             isOpen={isVisualizerOpen}
@@ -405,7 +441,7 @@ const WallpaperDetail = () => {
                                 {/* Part 2: Info Section */}
                                 <div className="detail-info-section">
                                     <div className="zara-breadcrumb" style={{ marginBottom: '0.5rem' }}>
-                                        <Link to="/catalog">Catalog</Link> / <span>{wallpaper.name}</span>
+                                        <Link to="/catalog">Catalog</Link> / <span>{wallpaper.name} - {wallpaper.design_code} </span>
                                     </div>
 
                                     <h1 className="zara-detail-title">{wallpaper.name}</h1>
@@ -417,10 +453,60 @@ const WallpaperDetail = () => {
                         )} */}
 
                                     <div className="zara-detail-desc">
-                                        <p>{wallpaper.description || `Experience the luxury of ${wallpaper.name}. Designed for high-end interiors, this premium wallpaper combines texture and durability.`}</p>
+                                        {wallpaper.tagline && <p className="story-tagline">{wallpaper.tagline}</p>}
+                                        <p>{wallpaper.story || wallpaper.description || `Experience the luxury of ${wallpaper.name}. Designed for high-end interiors, this premium wallpaper combines texture and durability.`}</p>
                                     </div>
 
-                                    <div className="zara-detail-meta">
+                                    {wallpaper.customer_fit?.length > 0 && (
+                                        <div className="story-section">
+                                            <h4 className="story-label">Why Customers Love It (Indian Home Fit)</h4>
+                                            <ul className="story-list">
+                                                {wallpaper.customer_fit.map((item, i) => (
+                                                    <li key={i}>{item}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {wallpaper.mood_tags?.length > 0 && (
+                                        <div className="story-section">
+                                            <h4 className="story-label">Mood</h4>
+                                            <p className="mood-tags-display">
+                                                {wallpaper.mood_tags.join(' • ')}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {wallpaper.ideal_for?.length > 0 && (
+                                        <div className="story-section">
+                                            <h4 className="story-label">Ideal For</h4>
+                                            <ul className="ideal-list">
+                                                {wallpaper.ideal_for.map((item, i) => (
+                                                    <li key={i}>{item}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {wallpaper.whatsapp_line && (
+                                        <div
+                                            className="whatsapp-decision-box"
+                                            style={{ cursor: 'pointer' }}
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(wallpaper.whatsapp_line);
+                                                alert('Decision line copied to clipboard!');
+                                            }}
+                                            title="Click to copy for WhatsApp"
+                                        >
+                                            <div className="whatsapp-header">
+                                                <span role="img" aria-label="brain">🧠</span> 10-Second Decision Line
+                                                <span style={{ marginLeft: 'auto', fontSize: '0.6rem', opacity: 0.5 }}>CLICK TO COPY</span>
+                                            </div>
+                                            <p className="whatsapp-text">"{wallpaper.whatsapp_line}"</p>
+                                        </div>
+                                    )}
+
+                                    {/* <div className="zara-detail-meta">
                                         <div className="meta-item">
                                             <span className="meta-label">DESIGN CODE</span>
                                             <span className="meta-value">{wallpaper.design_code || wallpaper.slug?.toUpperCase()}</span>
@@ -443,7 +529,7 @@ const WallpaperDetail = () => {
                                             <span className="meta-label">DURABILITY</span>
                                             <span className="meta-value">{wallpaper.durability || 'HIGH'} | {wallpaper.washability || 'WASHABLE'}</span>
                                         </div>
-                                    </div>
+                                    </div> */}
 
                                     <div className="zara-detail-actions">
                                         <button
@@ -512,13 +598,13 @@ const WallpaperDetail = () => {
                             </section>
                         )}
 
-                        <FloatingProductBar
+                        {/* <FloatingProductBar
                             currentSlug={slug}
                             groupId={firstGroupId}
                             categoryId={firstCategoryId}
                             products={productList}
                             loading={listLoading}
-                        />
+                        /> */}
                     </div>
                 </div>
 

@@ -3,7 +3,10 @@
 .desktop-layout-container {
     display: flex;
     gap: 2.5rem;
-    padding: 0 1.5% !important;
+    padding: 0 1.5% 0 0 !important;
+    margin-left: 0rem !important;
+    /* Align with header by counteracting main padding */
+    width: calc(100% + 1rem) !important;
     height: calc(100vh - var(--navbar-height));
     align-items: flex-start;
     overflow: hidden;
@@ -13,9 +16,10 @@
 .col-main-content {
     height: 100%;
     overflow-y: auto;
-    padding-right: 1.5rem;
-    padding-top: 0;
+    /* padding-right: 1.5rem; */
+    padding-top: 0 !important;
     flex: 1;
+    width: 100%;
 }
 
 /* Hide scrollbar for clean look but keep functionality */
@@ -35,12 +39,19 @@
     .desktop-layout-container {
         grid-template-columns: 1fr;
         display: block;
-        padding: 0 !important;
+        padding: 0 1rem !important;
+        /* symmetrical sidebar-like breathing room */
         margin: 0 !important;
+    }
+
+    .desktop-layout-container.is-detail-view {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
     }
 
     .col-main-content {
         padding: 0 !important;
+        /* rely on parent padding */
         margin: 0 !important;
     }
 }
@@ -49,8 +60,8 @@
 .home-layout-container {
     display: grid;
     grid-template-columns: 1fr minmax(200px, max-content);
-    gap: 4rem;
-    padding: 2rem 1rem 8rem 1rem;
+    /* gap: 4 rem; */
+    /* padding: 2rem 1rem 8rem 1rem; */
     min-height: calc(100vh - var(--navbar-height));
     align-items: flex-start;
 }
@@ -69,18 +80,11 @@
     position: sticky;
     top: 0;
     flex: 0 0 auto;
-    min-width: 140px;
+    width: 140px;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.desktop-layout-container.is-detail-view .col-filter-trigger {
-    min-width: 98px;
-    /* 30% shrink from 140px */
-}
-
-.desktop-layout-container.is-detail-view .col-filter-trigger:hover {
-    min-width: 140px;
-}
+/* Removed is-detail-view override to keep width consistent with catalog (140px) */
 
 .filter-word-btn {
     background: none;
@@ -106,24 +110,13 @@
     display: flex;
     flex-direction: column;
     gap: 3rem;
-    border-left: 1px solid #f0f0f0;
-    padding-left: 3rem;
     white-space: nowrap;
     flex: 0 0 auto;
-    min-width: 240px;
+    width: 140px;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.desktop-layout-container.is-detail-view .col-tools-panel {
-    min-width: 168px;
-    /* 30% shrink from 240px */
-    padding-left: 2rem;
-}
-
-.desktop-layout-container.is-detail-view .col-tools-panel:hover {
-    min-width: 240px;
-    padding-left: 3rem;
-}
+/* Removed is-detail-view override to keep width consistent with catalog (140px) */
 
 @media (max-width: 1024px) {
     .col-tools-panel {
@@ -189,7 +182,7 @@
     text-align: left;
     cursor: pointer;
     font-size: 0.75rem;
-    letter-spacing: 0.05em;
+    /* letter-spacing: 0.05em; */
     text-transform: uppercase;
     color: #000;
     display: flex;
@@ -222,22 +215,22 @@
 
 .zara-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
     padding-bottom: 8rem;
 }
 
-@media (min-width: 1400px) {
-    .zara-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+.zara-product-card:first-child {
+    grid-column: span 2;
+    margin-bottom: 0rem;
 }
 
-@media (max-width: 1399px) and (min-width: 1025px) {
-    .zara-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.zara-product-card:first-child .image-container {
+    aspect-ratio: auto;
+    height: 100vh;
+    /* Match the tall immersive Zara height */
 }
+
 
 /* Pagination within Drawer */
 .pagination-container-drawer {
@@ -267,11 +260,11 @@
 
 .detail-layout-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 7fr 3fr;
     grid-template-areas:
         "hero info"
         "residue residue";
-    gap: 2px;
+    gap: 50px;
     padding: 0;
     min-height: calc(100vh - var(--navbar-height));
     align-items: stretch;
@@ -284,20 +277,20 @@
 
 .detail-hero-image {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     object-fit: cover;
     cursor: pointer;
 }
 
 .detail-residue-section {
     grid-area: residue;
-    padding: 1rem;
+    padding: 0;
 }
 
 .detail-image-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 50px;
     padding-top: 0;
 }
 
@@ -312,7 +305,8 @@
     grid-area: info;
     display: flex;
     flex-direction: column;
-    padding: 0 1rem 4rem 1rem !important;
+    padding: 0 0 4rem 0 !important;
+    /* Edge-to-edge as per user request */
     background: #fff;
     scrollbar-width: none;
 }
@@ -414,7 +408,7 @@
 
 /* Related Products Grid */
 .related-wallpapers-section {
-    padding: 8rem 1rem 12rem 1rem;
+    padding: 8rem 0 12rem 0;
     border-top: 1px solid #f0f0f0;
 }
 
@@ -552,8 +546,10 @@
         grid-template-columns: 1fr;
         grid-template-areas: none;
         padding: 0 !important;
+        padding-top: 0 !important;
         display: block;
         margin: 0 !important;
+        margin-top: 0 !important;
     }
 
     .detail-hero-section,
@@ -582,8 +578,9 @@
 
     .detail-image-grid {
         grid-template-columns: 1fr !important;
-        gap: 2px;
-        padding: 0 !important;
+        gap: 2rem;
+        padding: 0 1rem !important;
+        /* Balanced side margins */
     }
 
     .detail-info-section {
@@ -624,6 +621,111 @@
     aspect-ratio: 3/4;
     object-fit: cover;
     background: #000;
+}
+
+/* Story-Driven Information Styles */
+.story-tagline {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+    color: #333;
+}
+
+.story-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.story-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 1rem;
+    color: #000;
+}
+
+.story-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.story-list li {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 0.6rem;
+    color: #333;
+}
+
+.mood-tags-display {
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: #333;
+    font-weight: 500;
+}
+
+.ideal-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.ideal-list li {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #333;
+}
+
+.ideal-list li::before {
+    content: "✓";
+    font-weight: bold;
+    color: #000;
+}
+
+.whatsapp-decision-box {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    background: #f8f8f8;
+    border-radius: 4px;
+    border: 1px solid #eeeeee;
+}
+
+.whatsapp-header {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #000;
+}
+
+.whatsapp-text {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    font-style: italic;
+    color: #111;
+    margin-bottom: 0 !important;
+}
+
+@media (max-width: 1024px) {
+    .ideal-list {
+        grid-template-columns: 1fr;
+    }
+
+    .whatsapp-decision-box {
+        padding: 1.25rem;
+    }
 }
 
 .mb-4 {

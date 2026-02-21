@@ -28,10 +28,11 @@ class OpenAiService {
             - Room Lighting: ${answers.lighting}
 
             Analyze their "vibe" and return a JSON object with:
-            1. "tags": A list of 4-6 specific keywords or design tags to search for in a wallpaper catalog (e.g. "minimalist", "floral", "geometric", "navy blue").
-            2. "category": One main category name that fits best (e.g. "Modern", "Classic", "Artistic", "Kids", "Nature").
-            3. "summary": A brief, catchy 1-sentence headline for the look (e.g., "We've curated a serene escape just for you.").
-            4. "description": A 2-3 sentence professional interior design explanation of why these choices fit their preferences.
+            1. "tags": A list of 4-6 specific design keywords in lowercase (e.g. "warm", "textured", "classic", "minimalist").
+            2. "category": One main category name that fits best (e.g. "Modern", "Classic", "Nature").
+            3. "summary": A brief, premium 1-sentence headline for the recommended look.
+            4. "description": A 2-3 sentence professional interior design explanation of why this specific vibe resonates with their room type, lighting, and preferred aesthetic.
+            5. "roomTypeMatch": The lowercase version of their room preference (${answers.roomType.toLowerCase()}) to filter the "ideal_for" column.
 
             Return ONLY valid JSON. No markdown formatting.`;
 
@@ -53,6 +54,7 @@ class OpenAiService {
             return this.getFallbackRecommendation(answers);
         }
     }
+
 
     /**
      * Rule-based fallback if AI fails or key is missing.

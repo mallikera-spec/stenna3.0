@@ -7,6 +7,14 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
     const [groups, setGroups] = useState([]);
     const [categories, setCategories] = useState([]);
     const [activeGroup, setActiveGroup] = useState(null);
+    const [viewMode, setViewMode] = useState('groups'); // 'groups' or 'categories' for mobile
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 1024);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const getInitials = (user) => {
         const name = user?.user_metadata?.full_name || user?.email || 'U';
@@ -45,15 +53,32 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
 
                 <div className="zara-menu-content">
                     {/* Column 1: Groups */}
-                    <div className="zara-menu-column groups-col">
+                    <div className={`zara-menu-column groups-col ${(isMobile && viewMode !== 'groups') ? 'mobile-hidden' : ''}`}>
+                        {isMobile && viewMode === 'categories' && (
+                            <button className="zara-menu-back-btn" onClick={() => setViewMode('groups')}>
+                                ← BACK
+                            </button>
+                        )}
                         <ul className="zara-group-list">
                             {groups.map(group => (
                                 <li
                                     key={group.id}
                                     className={activeGroup === group.id ? 'active' : ''}
-                                    onMouseEnter={() => setActiveGroup(group.id)}
+                                    onMouseEnter={() => !isMobile && setActiveGroup(group.id)}
+                                    onClick={() => {
+                                        if (isMobile) {
+                                            setActiveGroup(group.id);
+                                            setViewMode('categories');
+                                        }
+                                    }}
                                 >
-                                    <Link to={`/catalog?group=${group.id}`} onClick={onClose}>
+                                    <Link
+                                        to={isMobile ? '#' : `/catalog?group=${group.id}`}
+                                        onClick={(e) => {
+                                            if (isMobile) e.preventDefault();
+                                            else onClose();
+                                        }}
+                                    >
                                         {group.name}
                                     </Link>
                                 </li>
@@ -62,7 +87,12 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
                     </div>
 
                     {/* Column 2: Categories for Active Group */}
-                    <div className="zara-menu-column categories-col">
+                    <div className={`zara-menu-column categories-col ${(isMobile && viewMode !== 'categories') ? 'mobile-hidden' : ''}`}>
+                        {isMobile && (
+                            <button className="zara-menu-back-btn" onClick={() => setViewMode('groups')}>
+                                ← BACK TO MAIN
+                            </button>
+                        )}
                         <div className="categories-grid">
                             <div className="category-section">
                                 <span className="section-label">[01] COLLECTION</span>
@@ -97,7 +127,7 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
                     </div>
 
                     {/* Column 3: Editorial / Image */}
-                    <div className="zara-menu-column editorial-col">
+                    <div className={`zara-menu-column editorial-col ${(isMobile && viewMode !== 'groups') ? 'mobile-hidden' : ''}`}>
                         <div className="editorial-image-container">
                             <img
                                 src="https://images.unsplash.com/photo-1600607687920-4e5252c35a93?auto=format&fit=crop&q=80"
