@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     ShieldCheck,
     Globe,
@@ -12,9 +12,16 @@ import {
 } from 'lucide-react';
 import { fetchGroups } from '../services/api';
 import FloatingProductBar from '../components/FloatingProductBar';
+import ZaraMenu from '../components/ZaraMenu';
+import ToolsSidebar from '../components/ToolsSidebar';
+import { useAuth } from '../context/AuthContext';
 import '../styles/Home.css';
+import '../styles/CatalogLayout.css';
 
 const Home = () => {
+    const { user, signOut } = useAuth();
+    const navigate = useNavigate();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -43,89 +50,88 @@ const Home = () => {
 
     return (
         <div className="home-page">
-            <div className="zara-container">
-                {/* 01. HERO SECTION */}
-                {/* <section className="hero-minimal-v2 zara-hero">
-                    <div className="hero-content">
-                        <span className="zara-label">STENNA COLLECTION</span>
-                        <h1 className="zara-hero-title">PURE <br /> MATERIALITY.</h1>
-                        <Link to="/catalog" className="btn-zara-outline">ENTER ARCHIVE</Link>
-                    </div>
-                </section> */}
+            <ZaraMenu
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                user={user}
+                signOut={signOut}
+            />
 
-
-                {/* DYNAMIC GROUPS SECTIONS */}
-                {loading ? (
-                    <div style={{ padding: '10rem', textAlign: 'center', letterSpacing: '2px', textTransform: 'uppercase', color: '#000', fontWeight: '800' }}>
-                        Loading Collections...
-                    </div>
-                ) : (
-                    groups.map((group, index) => (
-                        <section key={group.id} className="zara-section">
-                            <div className="zara-content-block">
-                                <span className="section-label" style={{ color: '#000', fontWeight: '900' }}>
-                                    COLLECTION No. {index + 1} &mdash; {group.name}
-                                </span>
-                                <h2 style={{ fontWeight: '900' }}>
-                                    {group.name.split(' ').map((word, i) => (
-                                        <React.Fragment key={i}>
-                                            {word} {i === 0 && <br />}
-                                        </React.Fragment>
-                                    ))}
-                                </h2>
-                                <p style={{ color: '#000', fontWeight: '500' }}>
-                                    {group.description || "Discover the essence of architectural purity with our hand-curated collection of premium wall coverings."}
-                                </p>
-                                <div className="infographic-points" style={{ marginTop: '1.5rem', marginBottom: '2rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#000', fontWeight: '600' }}>
-                                        <ChevronRight size={14} /> <span>Hand-crafted textures</span>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#000', fontWeight: '600' }}>
-                                        <ChevronRight size={14} /> <span>Sustainable premium materials</span>
-                                    </div>
-                                </div>
-                                <Link to={`/catalog?group=${group.id}`} className="btn-zara-link" style={{ fontWeight: '800' }}>
-                                    Explore {group.name} Collection <ArrowRight size={14} style={{ marginLeft: '8px', verticalAlign: 'middle' }} />
-                                </Link>
+            <div className="desktop-layout-container">
+                {/* COLUMN 1: NAVIGATION TRIGGER */}
+                <div className="col-filter-trigger desktop-only">
+                    <div style={{ marginBottom: '2rem' }}>
+                        <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0', marginBottom: '2rem' }}>
+                            <div className="zara-hamburger">
+                                <div className="bar"></div>
+                                <div className="bar"></div>
                             </div>
-                            <div
-                                className="zara-visual-block"
-                                style={{
-                                    backgroundImage: `url(${group.image_url || fallbackImages[index % fallbackImages.length]})`
-                                }}
-                            >
-                                <div className="visual-block-overlay"></div>
+                        </button>
+                    </div>
+
+                    <div className="zara-breadcrumb" style={{ fontSize: '0.6rem', marginBottom: '2rem' }}>
+                        <div className="zara-breadcrumb" style={{ fontSize: '0.6rem' }}>
+                            <Link to="/catalog">CATALOG</Link>
+                        </div>
+                    </div>
+                </div>
+
+                {/* COLUMN 2: MAIN SCROLLABLE CONTENT */}
+                <div className="col-main-content">
+                    <div className="zara-container">
+                        {/* DYNAMIC GROUPS SECTIONS */}
+                        {loading ? (
+                            <div style={{ padding: '10rem', textAlign: 'center', letterSpacing: '2px', textTransform: 'uppercase', color: '#000', fontWeight: '800' }}>
+                                Loading Collections...
                             </div>
-                        </section>
-                    ))
-                )}
-
-                {/* FOOTER VALUES
-                <section style={{ padding: '10rem 0', textAlign: 'center', borderTop: '1px solid #efefef' }}>
-                    <h2 style={{ fontSize: '3.5rem', marginBottom: '5rem', letterSpacing: '8px', fontWeight: '300' }}>The Stenna Standard</h2>
-                    <div className="grid grid-cols-3" style={{ gap: '5rem', textAlign: 'left', padding: '0 5%' }}>
-                        <div>
-                            <span className="section-label" style={{ marginBottom: '1rem' }}>QUALITY</span>
-                            <h4 style={{ letterSpacing: '2px', marginBottom: '1rem', fontWeight: '800' }}>Italian Heritage</h4>
-                            <p style={{ color: '#666', fontSize: '0.9rem' }}>Artisanal quality produced in the world's most exclusive wallpaper mills in Florence.</p>
-                        </div>
-                        <div>
-                            <span className="section-label" style={{ marginBottom: '1rem' }}>TECH</span>
-                            <h4 style={{ letterSpacing: '2px', marginBottom: '1rem', fontWeight: '800' }}>Neural Search</h4>
-                            <p style={{ color: '#666', fontSize: '0.9rem' }}>Next-gen neural discovery engine for perfect pattern matching with proprietary vision algorithms.</p>
-                        </div>
-                        <div>
-                            <span className="section-label" style={{ marginBottom: '1rem' }}>SERVICE</span>
-                            <h4 style={{ letterSpacing: '2px', marginBottom: '1rem', fontWeight: '800' }}>White Glove</h4>
-                            <p style={{ color: '#666', fontSize: '0.9rem' }}>Direct consultation services and priority sampling for architects and luxury home-owners.</p>
-                        </div>
+                        ) : (
+                            groups.map((group, index) => (
+                                <section key={group.id} className="zara-section">
+                                    <div className="zara-content-block">
+                                        <span className="section-label" style={{ color: '#000', fontWeight: '900' }}>
+                                            COLLECTION No. {index + 1} &mdash; {group.name}
+                                        </span>
+                                        <h2 style={{ fontWeight: '900' }}>
+                                            {group.name.split(' ').map((word, i) => (
+                                                <React.Fragment key={i}>
+                                                    {word} {i === 0 && <br />}
+                                                </React.Fragment>
+                                            ))}
+                                        </h2>
+                                        <p style={{ color: '#000', fontWeight: '500' }}>
+                                            {group.description || "Discover the essence of architectural purity with our hand-curated collection of premium wall coverings."}
+                                        </p>
+                                        <div className="infographic-points" style={{ marginTop: '1.5rem', marginBottom: '2rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#000', fontWeight: '600' }}>
+                                                <ChevronRight size={14} /> <span>Hand-crafted textures</span>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#000', fontWeight: '600' }}>
+                                                <ChevronRight size={14} /> <span>Sustainable premium materials</span>
+                                            </div>
+                                        </div>
+                                        <Link to={`/catalog?group=${group.id}`} className="btn-zara-link" style={{ fontWeight: '800' }}>
+                                            Explore {group.name} Collection <ArrowRight size={14} style={{ marginLeft: '8px', verticalAlign: 'middle' }} />
+                                        </Link>
+                                    </div>
+                                    <div
+                                        className="zara-visual-block"
+                                        style={{
+                                            backgroundImage: `url(${group.image_url || fallbackImages[index % fallbackImages.length]})`
+                                        }}
+                                    >
+                                        <div className="visual-block-overlay"></div>
+                                    </div>
+                                </section>
+                            ))
+                        )}
                     </div>
-                    <div style={{ marginTop: '8rem' }}>
-                        <Link to="/ai-recommendations" className="btn-zara-solid">Book a Consultation</Link>
-                    </div>
-                </section> */}
+                </div>
 
-                {/* <FloatingProductBar /> */}
+                {/* COLUMN 3: TOOLS PANEL */}
+                <ToolsSidebar
+                    readOnlySearch
+                    onSearchClick={() => navigate('/catalog')}
+                />
             </div>
         </div>
     );

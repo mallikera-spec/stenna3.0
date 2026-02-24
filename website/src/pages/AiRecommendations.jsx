@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchAiRecommendations } from '../services/api';
 import '../styles/App.css';
+import '../styles/CatalogLayout.css';
+import ZaraMenu from '../components/ZaraMenu';
 
 const AiRecommendations = () => {
     const [step, setStep] = useState(0);
@@ -15,6 +17,7 @@ const AiRecommendations = () => {
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState(null);
     const [error, setError] = useState(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const questions = [
         {
@@ -78,104 +81,73 @@ const AiRecommendations = () => {
         setError(null);
     };
 
-    if (loading) {
-        return (
-            <div className="recommendations-page" style={{
-                textAlign: 'center',
-                padding: '120px 5%',
-                minHeight: '80vh',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
-                <div className="spinner" style={{
-                    width: '40px',
-                    height: '40px',
-                    border: '1px solid #eee',
-                    borderTop: '1px solid #000',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite',
-                    marginBottom: '2rem'
-                }}></div>
-                <h3 style={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: '1.5rem',
-                    letterSpacing: '0.05em',
-                    marginBottom: '1rem'
-                }}>Stenna AI is curating your collection</h3>
-                <p style={{
-                    fontSize: '0.8rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.2em',
-                    color: '#888'
-                }}>Analyzing {answers.style} trends and {answers.mood?.toLowerCase()} palettes</p>
-                {results?.is_fallback && (
-                    <div style={{
-                        marginTop: '1.5rem',
-                        padding: '0.4rem 0.8rem',
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <div style={{
+                    textAlign: 'center',
+                    padding: '8rem 0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <div className="spinner" style={{
+                        width: '40px',
+                        height: '40px',
                         border: '1px solid #eee',
-                        fontSize: '0.6rem',
-                        letterSpacing: '0.1em',
-                        display: 'inline-block'
-                    }}>BROAD MATCH ENABLED</div>
-                )}
-                <style>{`
-                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                `}</style>
-            </div>
-        );
-    }
-
-    if (results) {
-        return (
-            <div className="recommendations-page" style={{ padding: '40px 0' }}>
-                <header style={{ textAlign: 'center', marginBottom: '5rem', padding: '0 5%' }}>
-                    <h2 style={{
+                        borderTop: '1px solid #000',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        marginBottom: '2rem'
+                    }}></div>
+                    <h3 style={{
                         fontFamily: "'Playfair Display', serif",
-                        fontSize: '2.5rem',
-                        marginBottom: '1.5rem',
-                        letterSpacing: '-0.02em'
-                    }}>Your Personalized Collection</h2>
+                        fontSize: '1.5rem',
+                        letterSpacing: '0.05em',
+                        marginBottom: '1rem'
+                    }}>Stenna AI is curating your collection</h3>
                     <p style={{
                         fontSize: '0.8rem',
-                        fontWeight: '700',
                         textTransform: 'uppercase',
                         letterSpacing: '0.2em',
-                        color: '#000',
-                        marginBottom: '1.5rem',
-                        display: 'inline-block',
-                        borderBottom: '1px solid #000',
-                        paddingBottom: '0.5rem'
-                    }}>{results.summary}</p>
-                    {results.is_fallback && (
-                        <p style={{
-                            fontSize: '0.7rem',
-                            color: '#888',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.15em',
-                            margin: '1rem 0'
-                        }}>— Design Inspiration (Broad Match) —</p>
-                    )}
-                    <p style={{
-                        maxWidth: '700px',
-                        margin: '0 auto 2.5rem',
-                        color: '#444',
-                        fontSize: '1rem',
-                        lineHeight: '1.8',
-                        fontStyle: 'italic'
-                    }}>{results.description}</p>
-                    <button
-                        className="btn-zara-solid"
-                        onClick={resetQuiz}
-                        style={{ padding: '1rem 3rem' }}
-                    >
-                        Retake Quiz
-                    </button>
-                </header>
+                        color: '#888'
+                    }}>Analyzing {answers.style} trends and {answers.mood?.toLowerCase()} palettes</p>
+                    <style>{`
+                        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                    `}</style>
+                </div>
+            );
+        }
 
-                {results.recommendations?.length > 0 ? (
-                    <div className="desktop-layout-container" style={{ padding: '0 5% 5rem' }}>
+        if (results) {
+            return (
+                <div style={{ padding: '0 0 40px' }}>
+                    <header style={{ textAlign: 'center', marginBottom: '5rem' }}>
+                        <h2 style={{
+                            fontFamily: "'Playfair Display', serif",
+                            fontSize: '2.5rem',
+                            marginBottom: '1.5rem',
+                            letterSpacing: '-0.02em'
+                        }}>{results.summary}</h2>
+                        <p style={{
+                            maxWidth: '700px',
+                            margin: '0 auto 2.5rem',
+                            color: '#444',
+                            fontSize: '1rem',
+                            lineHeight: '1.8',
+                            fontStyle: 'italic'
+                        }}>{results.description}</p>
+                        <button
+                            className="btn-zara-solid"
+                            onClick={resetQuiz}
+                            style={{ padding: '1rem 3rem' }}
+                        >
+                            Retake Quiz
+                        </button>
+                    </header>
+
+                    {results.recommendations?.length > 0 ? (
                         <div className="grid grid-cols-3" style={{ gap: '40px 20px', width: '100%' }}>
                             {results.recommendations.map((item) => (
                                 <div key={item.id} className="card product-card" style={{ border: 'none' }}>
@@ -212,136 +184,166 @@ const AiRecommendations = () => {
                                                 marginBottom: '0.75rem',
                                                 letterSpacing: '0.05em'
                                             }}>{item.design_code}</p>
-                                            {item.tagline && (
-                                                <p style={{
-                                                    fontSize: '0.75rem',
-                                                    fontStyle: 'italic',
-                                                    color: '#333',
-                                                    lineHeight: '1.4'
-                                                }}>"{item.tagline}"</p>
-                                            )}
                                         </div>
                                     </Link>
                                 </div>
                             ))}
                         </div>
-                    </div>
-                ) : (
-                    <div style={{ padding: '100px 5%', textAlign: 'center' }}>
-                        <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', marginBottom: '2rem' }}>
-                            We couldn't find an exact match for this specific aesthetic.
-                        </p>
-                        <button className="btn-zara-solid" onClick={resetQuiz}>Try Different Preferences</button>
-                    </div>
-                )}
-            </div>
-        );
-    }
-
-    return (
-        <div className="recommendations-page" style={{ padding: '60px 5%', minHeight: '90vh' }}>
-            <header style={{ textAlign: 'center', marginBottom: '5rem' }}>
-                <h2 style={{
-                    fontFamily: "'Playfair Display', serif",
-                    fontSize: '3.5rem',
-                    marginBottom: '1rem',
-                    letterSpacing: '-0.02em'
-                }}>The AI Designer</h2>
-                <p style={{
-                    fontSize: '0.8rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.3em',
-                    color: '#888'
-                }}>Curated vibes for your space in 5 questions</p>
-            </header>
-
-            <div className="zara-quiz-container" style={{ maxWidth: '900px', margin: '0 auto' }}>
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    marginBottom: '1rem'
-                }}>
-                    <span style={{
-                        fontSize: '0.7rem',
-                        fontWeight: '700',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.2em'
-                    }}>Step {step + 1} of {questions.length}</span>
-                    <span style={{ fontSize: '0.8rem', color: '#888' }}>{Math.round(((step + 1) / questions.length) * 100)}%</span>
+                    ) : (
+                        <div style={{ textAlign: 'center' }}>
+                            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', marginBottom: '2rem' }}>
+                                We couldn't find an exact match for this specific aesthetic.
+                            </p>
+                            <button className="btn-zara-solid" onClick={resetQuiz}>Try Different Preferences</button>
+                        </div>
+                    )}
                 </div>
+            );
+        }
 
-                <div style={{ width: '100%', height: '1px', background: '#eee', marginBottom: '4rem' }}>
-                    <div style={{
-                        width: `${((step + 1) / questions.length) * 100}%`,
-                        height: '1px',
-                        background: '#000',
-                        transition: 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
-                    }}></div>
-                </div>
-
-                <div className="question-block" style={{ animation: 'fadeInUp 0.6s ease' }}>
-                    <h3 style={{
+        return (
+            <div style={{ padding: '0 0 60px' }}>
+                <header style={{ textAlign: 'center', marginBottom: '5rem' }}>
+                    <h2 style={{
                         fontFamily: "'Playfair Display', serif",
-                        fontSize: '2.5rem',
-                        marginBottom: '3rem',
-                        textAlign: 'left',
-                        lineHeight: '1.2'
-                    }}>{currentQuestion.question}</h3>
+                        fontSize: '3.5rem',
+                        marginBottom: '1rem',
+                        letterSpacing: '-0.02em'
+                    }}>The AI Designer</h2>
+                    <p style={{
+                        fontSize: '0.8rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.3em',
+                        color: '#888'
+                    }}>Curated vibes for your space in 5 questions</p>
+                </header>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        {currentQuestion.options.map((option) => (
+                <div className="zara-quiz-container" style={{ maxWidth: '900px', margin: '0 auto' }}>
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'baseline',
+                        marginBottom: '1rem'
+                    }}>
+                        <span style={{
+                            fontSize: '0.7rem',
+                            fontWeight: '700',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.2em'
+                        }}>Step {step + 1} of {questions.length}</span>
+                        <span style={{ fontSize: '0.8rem', color: '#888' }}>{Math.round(((step + 1) / questions.length) * 100)}%</span>
+                    </div>
+
+                    <div style={{ width: '100%', height: '1px', background: '#eee', marginBottom: '4rem' }}>
+                        <div style={{
+                            width: `${((step + 1) / questions.length) * 100}%`,
+                            height: '1px',
+                            background: '#000',
+                            transition: 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                        }}></div>
+                    </div>
+
+                    <div className="question-block" style={{ animation: 'fadeInUp 0.6s ease' }}>
+                        <h3 style={{
+                            fontFamily: "'Playfair Display', serif",
+                            fontSize: '2.5rem',
+                            marginBottom: '3rem',
+                            textAlign: 'left',
+                            lineHeight: '1.2'
+                        }}>{currentQuestion.question}</h3>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            {currentQuestion.options.map((option) => (
+                                <button
+                                    key={option}
+                                    className="zara-option-btn"
+                                    onClick={() => handleOptionSelect(option)}
+                                >
+                                    {option}
+                                    <span style={{ opacity: 0.3 }}>→</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {step > 0 && (
                             <button
-                                key={option}
-                                className="zara-option-btn"
+                                onClick={() => setStep(step - 1)}
                                 style={{
-                                    padding: '2rem 1.5rem',
-                                    background: '#fff',
-                                    border: '1px solid #eee',
-                                    fontSize: '0.85rem',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.15em',
-                                    textAlign: 'left',
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#888',
+                                    marginTop: '3rem',
                                     cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center'
-                                }}
-                                onClick={() => handleOptionSelect(option)}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.borderColor = '#000';
-                                    e.currentTarget.style.paddingLeft = '2.5rem';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.borderColor = '#eee';
-                                    e.currentTarget.style.paddingLeft = '1.5rem';
+                                    fontSize: '0.7rem',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.2em',
+                                    padding: '0'
                                 }}
                             >
-                                {option}
-                                <span style={{ opacity: 0.3 }}>→</span>
+                                ← Previous
                             </button>
-                        ))}
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="recommendations-page fade-in-up">
+            <ZaraMenu
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                user={null}
+                signOut={() => { }}
+            />
+
+            <div className="desktop-layout-container">
+                {/* COLUMN 1: NAVIGATION TRIGGER */}
+                <div className="col-filter-trigger desktop-only">
+                    <div style={{ marginBottom: '2rem' }}>
+                        <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0', marginBottom: '2rem' }}>
+                            <div className="zara-hamburger">
+                                <div className="bar"></div>
+                                <div className="bar"></div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                {/* COLUMN 2: MAIN SCROLLABLE CONTENT */}
+                <div className="col-main-content">
+                    {renderContent()}
+                </div>
+
+                {/* COLUMN 3: TOOLS PANEL */}
+                <div className="col-tools-panel desktop-only">
+                    {/* Search Section */}
+                    <div className="zara-search-wrapper">
+                        <input
+                            type="text"
+                            placeholder="SEARCH"
+                            className="zara-search-input"
+                            onClick={() => window.location.href = '/catalog'}
+                            readOnly
+                        />
                     </div>
 
-                    {step > 0 && (
-                        <button
-                            onClick={() => setStep(step - 1)}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                color: '#888',
-                                marginTop: '3rem',
-                                cursor: 'pointer',
-                                fontSize: '0.7rem',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.2em',
-                                padding: '0'
-                            }}
-                        >
-                            ← Previous
-                        </button>
-                    )}
+                    {/* Navigation/User Section */}
+                    <div className="sidebar-tools-group">
+                        <Link to="/ai-recommendations" className="sidebar-tool-link">
+                            AI RECOMMENDATIONS
+                        </Link>
+                        <Link to="/try-it-on" className="sidebar-tool-link">
+                            TRY IT ON
+                        </Link>
+                        <Link to="/profile/enquiries" className="sidebar-tool-link">
+                            MY QUERIES
+                        </Link>
+                        <Link to="/profile" className="sidebar-tool-link">
+                            ACCOUNT
+                        </Link>
+                    </div>
                 </div>
             </div>
 
@@ -350,7 +352,23 @@ const AiRecommendations = () => {
                     from { opacity: 0; transform: translateY(20px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
+                .zara-option-btn {
+                    padding: 2rem 1.5rem;
+                    background: #fff;
+                    border: 1px solid #eee;
+                    font-size: 0.85rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.15em;
+                    text-align: left;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    justify-content: space-between;
+                    alignItems: center;
+                }
                 .zara-option-btn:hover {
+                    border-color: #000;
+                    padding-left: 2.5rem;
                     box-shadow: 0 10px 30px rgba(0,0,0,0.03);
                 }
             `}</style>

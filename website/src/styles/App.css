@@ -1,15 +1,18 @@
 :root {
-  --navbar-height: 60px;
+  --navbar-height: 0px;
 }
 
 body {
-  padding-top: var(--navbar-height);
+  padding-top: 0;
 }
 
 @media (max-width: 1024px) {
+  :root {
+    --navbar-height: 60px;
+  }
+
   body {
-    padding-top: 60px;
-    /* Synchronized with mobile navbar height */
+    padding-top: 0;
   }
 }
 
@@ -17,13 +20,16 @@ body {
   width: 100%;
   margin: 0;
   min-height: 100vh;
+  padding: 0 !important;
+  overflow-x: hidden;
 }
 
 main,
 .footer-content {
   width: 100%;
   margin: 0;
-  padding: 0 1rem;
+  padding: 0;
+  /* Remove main padding */
 }
 
 @media (max-width: 1024px) {
@@ -79,10 +85,14 @@ main,
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   /* subtle separation */
   z-index: 1000;
-  transition: all 0.3s ease;
-  height: var(--navbar-height);
-  display: flex;
+  display: none;
   align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .navbar {
+    display: flex;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -614,12 +624,6 @@ main,
   border-radius: 0;
   overflow: hidden;
   box-shadow: none;
-  transition: opacity 0.3s ease;
-}
-
-.card:hover {
-  opacity: 0.8;
-  transform: none;
 }
 
 .image-container {
@@ -1016,8 +1020,8 @@ main,
   left: 0;
   width: 100%;
   height: 100vh;
-  background: white;
-  z-index: 2000;
+  z-index: 10000;
+  background: #ffffff;
   opacity: 1;
   /* Always opaque during transition */
   visibility: visible;
@@ -1037,15 +1041,11 @@ main,
 }
 
 .zara-menu-header {
-  display: flex;
-  height: calc(var(--navbar-height) + 1rem);
-  /* Match nav padding */
+  min-height: 12rem;
+  /* Ensure logo fits */
   align-items: center;
-  padding-top: 1rem;
-  /* Match nav padding */
-  padding-left: 1rem;
-  /* Match nav padding */
-  margin-bottom: 2rem;
+  padding: 2rem 2rem 0 2rem;
+  margin-bottom: 3rem;
 }
 
 @media (max-width: 1024px) {
@@ -1056,10 +1056,10 @@ main,
 }
 
 .zara-logo-large {
-  font-size: 8rem;
+  font-size: 7rem;
   font-weight: 950;
   letter-spacing: -6px;
-  line-height: 0.8;
+  line-height: 1;
   color: #000;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   padding-left: 1rem;
@@ -1495,14 +1495,19 @@ main,
 }
 
 .btn-zara-primary {
-  background: #000;
-  color: #fff;
-  border: none;
+  background: transparent;
+  color: #000;
+  border: 1px solid #000;
   padding: 1rem;
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-zara-primary:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .btn-zara-outline {

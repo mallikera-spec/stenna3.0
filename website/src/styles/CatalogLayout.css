@@ -2,24 +2,24 @@
 
 .desktop-layout-container {
     display: flex;
-    gap: 2.5rem;
-    padding: 0 1.5% 0 0 !important;
-    margin-left: 0rem !important;
-    /* Align with header by counteracting main padding */
-    width: calc(100% + 1rem) !important;
-    height: calc(100vh - var(--navbar-height));
-    align-items: flex-start;
+    gap: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: 100vh;
+    align-items: stretch;
     overflow: hidden;
-    margin-top: 0 !important;
 }
 
 .col-main-content {
     height: 100%;
     overflow-y: auto;
-    /* padding-right: 1.5rem; */
-    padding-top: 0 !important;
+    padding: 2rem 0 !important;
+    /* Consistent top padding, no side padding */
     flex: 1;
-    width: 100%;
+    /* Occupy remaining space */
+    min-width: 0;
+    /* Prevents overflow in flex container */
 }
 
 /* Hide scrollbar for clean look but keep functionality */
@@ -39,8 +39,8 @@
     .desktop-layout-container {
         grid-template-columns: 1fr;
         display: block;
-        padding: 0 1rem !important;
-        /* symmetrical sidebar-like breathing room */
+        padding: 0 !important;
+        /* Edge-to-edge on mobile */
         margin: 0 !important;
     }
 
@@ -50,9 +50,10 @@
     }
 
     .col-main-content {
-        padding: 0 !important;
-        /* rely on parent padding */
+        padding: 0 5% !important;
         margin: 0 !important;
+        width: 100% !important;
+        flex: 0 0 100% !important;
     }
 }
 
@@ -76,12 +77,21 @@
 
 /* Column 1: Filter Trigger */
 .col-filter-trigger {
-    padding-top: 0 !important;
+    padding: 1rem 0.75rem 2rem 1.5rem !important;
     position: sticky;
-    top: 0;
-    flex: 0 0 auto;
-    width: 140px;
+    top: 0 !important;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1.0rem;
+    flex: 0 0 160px;
+    /* Fixed width for text stability */
+    width: 160px;
+    height: 100vh;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: left;
 }
 
 /* Removed is-detail-view override to keep width consistent with catalog (140px) */
@@ -104,16 +114,78 @@
 
 /* Column 3: Tools Panel */
 .col-tools-panel {
-    padding-top: 0 !important;
+    padding: 1rem 1.5rem 2rem 0.75rem !important;
     position: sticky;
-    top: 0;
+    top: 0 !important;
+    z-index: 100;
     display: flex;
     flex-direction: column;
-    gap: 3rem;
-    white-space: nowrap;
-    flex: 0 0 auto;
-    width: 140px;
+    justify-content: flex-start;
+    gap: 1.0rem;
+    flex: 0 0 160px;
+    /* Fixed width for text stability */
+    width: 160px;
+    height: 100vh;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: right;
+    /* Right align as per screenshot */
+}
+
+.zara-search-wrapper {
+    margin-top: 0 !important;
+    border-bottom: 1px solid #000;
+    padding-bottom: 4px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.zara-search-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    text-align: right;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+.zara-search-input::placeholder {
+    color: #999;
+    letter-spacing: 0.1em;
+}
+
+.sidebar-tools-group {
+    padding-bottom: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.sidebar-tool-link {
+    text-decoration: none;
+    color: #000;
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.sidebar-tool-link:hover {
+    opacity: 0.6;
+}
+
+.bag-count-bracket {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
 }
 
 /* Removed is-detail-view override to keep width consistent with catalog (140px) */
@@ -121,6 +193,34 @@
 @media (max-width: 1024px) {
     .col-tools-panel {
         display: none !important;
+    }
+}
+
+/* Tablet / Small Desktop Optimization (1025px to 1400px) */
+@media (min-width: 1025px) and (max-width: 1400px) {
+
+    .col-filter-trigger,
+    .col-tools-panel {
+        display: flex !important;
+        flex: 0 0 155px !important;
+        width: 155px !important;
+        padding: 1rem 0.75rem !important;
+    }
+
+    .zara-sidebar-item,
+    .sidebar-tool-link,
+    .zara-search-input {
+        font-size: 0.62rem !important;
+        white-space: nowrap !important;
+    }
+
+    .zara-breadcrumb {
+        font-size: 0.55rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .zara-sidebar-list {
+        gap: 0.4rem !important;
     }
 }
 
@@ -181,7 +281,7 @@
     margin: 0;
     text-align: left;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.62rem;
     /* letter-spacing: 0.05em; */
     text-transform: uppercase;
     color: #000;
@@ -189,6 +289,7 @@
     gap: 0.75rem;
     transition: opacity 0.2s;
     font-weight: 400;
+    white-space: nowrap;
 }
 
 .zara-sidebar-item:hover {
@@ -197,6 +298,24 @@
 
 .zara-sidebar-item.active {
     font-weight: 800;
+}
+
+.zara-breadcrumb {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 2rem;
+}
+
+.zara-breadcrumb a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s;
+}
+
+.zara-breadcrumb a:hover {
+    color: #000;
 }
 
 .zara-item-num {
@@ -320,7 +439,7 @@
     font-weight: 500;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .zara-price {
@@ -377,8 +496,8 @@
 }
 
 .btn-zara-primary {
-    background: #000;
-    color: #fff;
+    background: transparent;
+    color: #000;
     border: 1px solid #000;
     padding: 1.25rem;
     font-size: 0.7rem;
@@ -386,11 +505,11 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
 }
 
 .btn-zara-primary:hover {
-    background: #333;
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .btn-zara-outline {
@@ -564,7 +683,7 @@
     }
 
     .detail-hero-image {
-        height: 65vh;
+        height: 50vh;
         object-fit: cover;
         width: 100%;
     }
@@ -579,13 +698,27 @@
     .detail-image-grid {
         grid-template-columns: 1fr !important;
         gap: 2rem;
-        padding: 0 1rem !important;
+        padding: 0 5% !important;
         /* Balanced side margins */
     }
 
     .detail-info-section {
-        padding: 1.5rem 1rem !important;
-        /* Keep text padding but remove top/bottom extra */
+        padding: 1rem 5% !important;
+        background: #fff;
+        scrollbar-width: none;
+    }
+
+    .zara-detail-title {
+        font-size: 2.2rem !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+        letter-spacing: -0.02em !important;
+    }
+
+    .zara-breadcrumb {
+        margin-bottom: 0.25rem !important;
     }
 
     .floating-product-bar-v3 {
@@ -730,4 +863,106 @@
 
 .mb-4 {
     margin-bottom: 2rem;
+}
+
+/* --- Product Info Modular (Tabs/Accordion) --- */
+.product-info-modular {
+    margin: 3rem 0;
+    border-top: 1px solid #eee;
+}
+
+/* Mobile Tabs */
+@media (max-width: 1024px) {
+    .product-tabs-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 0;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .tab-btn {
+        flex: 1;
+        text-align: center;
+        background: none;
+        border: none;
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        color: #999;
+        padding: 0.5rem 0.25rem;
+        white-space: nowrap;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .tab-btn.active {
+        color: #000;
+        border-bottom: 2px solid #000;
+    }
+}
+
+/* Desktop Accordion */
+@media (min-width: 1025px) {
+    .collapsible-section {
+        border-bottom: 1px solid #eee;
+    }
+
+    .collapsible-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 0;
+        cursor: pointer;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        transition: opacity 0.2s;
+    }
+
+    .collapsible-header:hover {
+        opacity: 0.7;
+    }
+
+    .collapsible-content {
+        overflow: hidden;
+        padding-bottom: 0;
+        height: 0;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .collapsible-section.expanded .collapsible-content {
+        height: auto;
+        opacity: 1;
+        padding-bottom: 1.5rem;
+    }
+}
+
+/* Mobile Content Adjustments */
+@media (max-width: 1024px) {
+    .collapsible-content {
+        padding-top: 1.5rem;
+    }
+}
+
+.no-data-msg {
+    font-size: 0.75rem;
+    color: #999;
+    font-style: italic;
+}
+
+.whatsapp-decision-box-modular {
+    background: #fdfdfd;
+    border: 1px solid #f0f0f0;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.whatsapp-decision-box-modular:hover {
+    background: #f8f8f8;
 }

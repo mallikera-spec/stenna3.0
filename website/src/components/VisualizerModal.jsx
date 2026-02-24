@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { generateVisualization } from '../services/api';
+import { useVisualizationHistory } from '../hooks/useVisualizationHistory';
 
 const VisualizerModal = ({ isOpen, onClose, wallpaper }) => {
+    const { saveToHistory } = useVisualizationHistory();
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -32,6 +34,8 @@ const VisualizerModal = ({ isOpen, onClose, wallpaper }) => {
         try {
             const response = await generateVisualization(formData);
             setResultUrl(response.generatedUrl);
+            // Save to history
+            saveToHistory(wallpaper, response.generatedUrl);
         } catch (err) {
             setError(err.message || 'Failed to generate visualization. Please try again.');
         } finally {

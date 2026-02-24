@@ -119,7 +119,10 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
                                         <Link to="/ai-recommendations" onClick={onClose}>AI RECOMMENDATIONS</Link>
                                     </li>
                                     <li>
-                                        <Link to="/profile/enquiries" onClick={onClose}>ENQUIRIES</Link>
+                                        <Link to="/profile/visualizations" onClick={onClose}>VISUALIZATION HISTORY</Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/my-queries" onClick={onClose}>MY QUERIES</Link>
                                     </li>
                                 </ul>
                             </div>
@@ -144,7 +147,7 @@ const ZaraMenu = ({ isOpen, onClose, user, signOut }) => {
                                             <span className="user-name">{user.user_metadata?.full_name || 'Stenna User'}</span>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                                                 <Link to="/profile" className="profile-link" onClick={onClose}>VIEW PROFILE</Link>
-                                                <Link to="/profile/enquiries" className="profile-link" onClick={onClose} style={{ fontSize: '0.65rem' }}>MY ENQUIRIES</Link>
+                                                <Link to="/profile/enquiries" className="profile-link" onClick={onClose} style={{ fontSize: '0.65rem' }}>MY QUERIES</Link>
                                             </div>
                                         </div>
                                     </div>

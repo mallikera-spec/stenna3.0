@@ -10,6 +10,7 @@ import TryItOn from '../pages/TryItOn';
 import AiRecommendations from '../pages/AiRecommendations';
 import WallpaperDetail from '../pages/WallpaperDetail';
 import Showcase from '../pages/Showcase';
+import Visualizations from '../pages/Visualizations';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 const AppRoutes = () => {
@@ -67,6 +68,14 @@ const AppRoutes = () => {
                 element={
                     <ProtectedRoute>
                         <AiRecommendations />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/profile/visualizations"
+                element={
+                    <ProtectedRoute>
+                        <Visualizations />
                     </ProtectedRoute>
                 }
             />

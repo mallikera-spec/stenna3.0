@@ -55,9 +55,9 @@ function Navbar() {
             </div>
           </button>
 
-          {/* <div className="logo">
+          <div className="logo" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
             <Link to="/" onClick={() => setIsMenuOpen(false)}>STENNA</Link>
-          </div> */}
+          </div>
 
           <div className="nav-links desktop-only">
             {/* Keeping some minimal links or just icons for a Zara feel */}
@@ -66,7 +66,7 @@ function Navbar() {
               <Sparkles size={14} className="usp-icon" /> TRY IT ON
             </Link> */}
             <Link to="/profile/enquiries" className="nav-item">
-              ENQUIRIES
+              MY QUERIES
             </Link>
             {/* <Link to="/ai-recommendations" className="nav-item nav-usp">
               <Sparkles size={14} className="usp-icon" /> AI RECOMMEND
@@ -143,21 +143,16 @@ function App() {
     <AuthProvider>
       <div className="container">
         <Navbar />
-
         <main style={{ minHeight: '70vh' }}>
           <AppRoutes />
         </main>
 
-        {/* <footer style={{ marginTop: '4rem', padding: '2rem 5%', borderTop: '1px solid var(--border-color)', textAlign: 'center', color: 'var(--text-secondary)', width: '100%' }}>
-          <div className="footer-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            <p>&copy; 2026 Wallpaper Catalog. All rights reserved.</p>
-            <div className="footer-links" style={{ display: 'flex', gap: '1.5rem' }}>
-              <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Privacy Policy</a>
-              <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Terms of Service</a>
-              <a href="#" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Contact Us</a>
-            </div>
-          </div>
-        </footer> */}
+        <ZaraMenu
+          isOpen={false}
+          onClose={() => { }}
+          user={null}
+          signOut={() => { }}
+        />
       </div>
     </AuthProvider>
   )

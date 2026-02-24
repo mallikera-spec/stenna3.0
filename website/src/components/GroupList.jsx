@@ -8,7 +8,7 @@ const GroupList = ({ groups, selectedGroupIds, onToggleGroup }) => {
                     className={`zara-sidebar-item ${selectedGroupIds.length === 0 ? 'active' : ''}`}
                     onClick={() => onToggleGroup(null)}
                 >
-                    <span className="zara-item-num">|01|</span>
+                    {/* <span className="zara-item-num">|01|</span> */}
                     VIEW ALL
                 </button>
                 {groups.map((group, index) => (
@@ -17,7 +17,7 @@ const GroupList = ({ groups, selectedGroupIds, onToggleGroup }) => {
                         className={`zara-sidebar-item ${selectedGroupIds.includes(group.id) ? 'active' : ''}`}
                         onClick={() => onToggleGroup(group.id)}
                     >
-                        <span className="zara-item-num">|{String(index + 2).padStart(2, '0')}|</span>
+                        {/* <span className="zara-item-num">|{String(index + 2).padStart(2, '0')}|</span> */}
                         {group.name}
                     </button>
                 ))}

@@ -7,10 +7,13 @@ import { fetchGroups, fetchCategories, fetchWallpapers } from '../services/api';
 import GroupList from '../components/GroupList';
 import CategoryList from '../components/CategoryList';
 import WallpaperList from '../components/WallpaperList';
+import ZaraMenu from '../components/ZaraMenu';
+import ToolsSidebar from '../components/ToolsSidebar';
 import { useAuth } from '../context/AuthContext';
 
 const Catalog = () => {
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchParams] = useSearchParams();
     const [groups, setGroups] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -134,7 +137,7 @@ const Catalog = () => {
             <div className={`filter-drawer ${isFilterOpen ? 'open' : ''}`}>
                 <div className="filter-header">
                     <button className="btn-close-filter" onClick={() => setIsFilterOpen(false)}>&times;</button>
-                    <h2 className="zara-label">FILTERS</h2>
+                    {/* <h2 className="zara-label">FILTERS</h2> */}
                 </div>
 
                 <div className="filter-content-scroll" style={{ flex: 1, overflowY: 'auto' }}>
@@ -174,25 +177,41 @@ const Catalog = () => {
                 </div>
             </div>
 
+            <ZaraMenu
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                user={user}
+                signOut={signOut}
+            />
+
             <div className="desktop-layout-container" style={{ paddingTop: '0' }}>
                 {/* COLUMN 1: FILTER TRIGGER */}
-                <div className="col-filter-trigger desktop-only" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                    <div className="zara-breadcrumb" style={{ fontSize: '0.6rem', marginBottom: '2rem' }}>
+                <div className="col-filter-trigger desktop-only">
+                    <div>
+                        <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0' }}>
+                            <div className="zara-hamburger">
+                                <div className="bar"></div>
+                                <div className="bar"></div>
+                            </div>
+                        </button>
+                    </div>
+                    <div className="zara-breadcrumb">
                         <Link to="/">HOME</Link> / <span>CATALOG</span>
                     </div>
 
-                    <div style={{ marginBottom: '2rem' }}>
+
+                    <div>
                         <GroupList groups={groups} selectedGroupIds={selectedGroupIds} onToggleGroup={handleToggleGroup} />
                     </div>
 
-                    <div style={{ marginBottom: '2rem' }}>
+                    <div>
                         <CategoryList categories={categories} selectedCategoryIds={selectedCategoryIds} onToggleCategory={handleToggleCategory} />
                     </div>
 
                     <div className="zara-bottom-controls">
-                        <button className="filter-word-btn" onClick={() => setIsFilterOpen(true)} style={{ textAlign: 'left' }}>
+                        {/* <button className="filter-word-btn" onClick={() => setIsFilterOpen(true)} style={{ textAlign: 'left' }}>
                             FILTERS
-                        </button>
+                        </button> */}
 
                         <div style={{ opacity: 0.4, fontSize: '0.6rem', letterSpacing: '0.05em', marginTop: '1rem' }}>
                             {loading ? "REFRESHING..." : `${wallpapers.length} ARTWORKS FOUND`}
@@ -210,52 +229,10 @@ const Catalog = () => {
                 </div>
 
                 {/* COLUMN 3: TOOLS PANEL */}
-                <div className="col-tools-panel">
-                    {/* Search Section */}
-                    <div className="tool-section">
-                        {/* <h3>SEARCH</h3> */}
-                        <div style={{ position: 'relative', borderBottom: '1px solid #000' }}>
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.5rem 0',
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    fontSize: '0.7rem',
-                                    letterSpacing: '0.1em',
-                                    outline: 'none',
-                                    textTransform: 'uppercase'
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Links Section */}
-                    <div className="tool-section">
-                        <h3>DISCOVERY</h3>
-                        <Link to="/try-it-on" className="tool-link">
-                            <Layout size={16} /> TRY IT ON YOUR WALL
-                        </Link>
-                        <Link to="/ai-recommendations" className="tool-link">
-                            <Sparkles size={16} /> AI RECOMMENDATIONS
-                        </Link>
-                    </div>
-
-                    {/* User Section */}
-                    <div className="tool-section">
-                        <h3>ACCOUNT</h3>
-                        <div className="user-display">
-                            <User size={16} />
-                            <span className="user-name-label">
-                                {user ? (user.user_metadata?.full_name || user.email.split('@')[0]) : "GUEST"}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <ToolsSidebar
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                />
             </div>
         </div>
     );

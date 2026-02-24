@@ -8,13 +8,16 @@ import EnquiryModal from '../components/EnquiryModal';
 import FloatingProductBar from '../components/FloatingProductBar';
 import GroupList from '../components/GroupList';
 import CategoryList from '../components/CategoryList';
+import ToolsSidebar from '../components/ToolsSidebar';
 import { useAuth } from '../context/AuthContext';
-import { Sparkles, Layout, Search, User } from 'lucide-react';
+import { Sparkles, Layout, Search, User, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
 import '../styles/App.css';
 import '../styles/CatalogLayout.css';
+import ZaraMenu from '../components/ZaraMenu';
 
 const WallpaperDetail = () => {
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { slug } = useParams();
     const navigate = useNavigate();
     const [wallpaper, setWallpaper] = useState(null);
@@ -35,8 +38,9 @@ const WallpaperDetail = () => {
     const [isVisualizerOpen, setIsVisualizerOpen] = useState(false);
     const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
     const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('description');
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [activeTab, setActiveTab] = useState('info'); // Default to info on mobile
+    const [expandedSections, setExpandedSections] = useState({ fit: true }); // Grouped fields
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const [activeImage, setActiveImage] = useState(0);
     const [productList, setProductList] = useState([]);
     const [listLoading, setListLoading] = useState(false);
@@ -51,7 +55,7 @@ const WallpaperDetail = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        const handleResize = () => setIsMobile(window.innerWidth <= 1024);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -209,20 +213,6 @@ const WallpaperDetail = () => {
                     setActiveImage(prev => (prev - 1 + wallpaper.images.length) % wallpaper.images.length);
                 }
                 setIsZoomed(false); // Reset zoom when switching images
-            } else {
-                // Swipe Products
-                const currentIndex = productList.findIndex(p => p.slug === slug);
-                if (currentIndex === -1) return;
-
-                if (diff > 0) {
-                    // Swipe Left -> Next Product
-                    const nextIndex = (currentIndex + 1) % productList.length;
-                    navigate(`/wallpaper/${productList[nextIndex].slug}`);
-                } else {
-                    // Swipe Right -> Prev Product
-                    const prevIndex = (currentIndex - 1 + productList.length) % productList.length;
-                    navigate(`/wallpaper/${productList[prevIndex].slug}`);
-                }
             }
         }
         setTouchStart(null);
@@ -277,9 +267,25 @@ const WallpaperDetail = () => {
                 </div>
             </div>
 
+            <ZaraMenu
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                user={user}
+                signOut={signOut}
+            />
+
             <div className="desktop-layout-container is-detail-view" style={{ paddingTop: '0', marginTop: '0' }}>
                 {/* COLUMN 1: FILTER TRIGGER (CATALOG NAV) */}
-                <div className="col-filter-trigger desktop-only" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div className="col-filter-trigger desktop-only">
+                    <div style={{ marginBottom: '2rem' }}>
+                        <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(true)} style={{ padding: '0', marginBottom: '2rem' }}>
+                            <div className="zara-hamburger">
+                                <div className="bar"></div>
+                                <div className="bar"></div>
+                            </div>
+                        </button>
+                    </div>
+
                     <div className="zara-breadcrumb" style={{ fontSize: '0.6rem', marginBottom: '0.5rem' }}>
                         <Link to="/">HOME</Link> / <Link to="/catalog">CATALOG</Link> / <span>{wallpaper?.name}</span>
                     </div>
@@ -440,7 +446,7 @@ const WallpaperDetail = () => {
 
                                 {/* Part 2: Info Section */}
                                 <div className="detail-info-section">
-                                    <div className="zara-breadcrumb" style={{ marginBottom: '0.5rem' }}>
+                                    <div className="zara-breadcrumb">
                                         <Link to="/catalog">Catalog</Link> / <span>{wallpaper.name} - {wallpaper.design_code} </span>
                                     </div>
 
@@ -452,59 +458,185 @@ const WallpaperDetail = () => {
                             </>
                         )} */}
 
-                                    <div className="zara-detail-desc">
-                                        {wallpaper.tagline && <p className="story-tagline">{wallpaper.tagline}</p>}
-                                        <p>{wallpaper.story || wallpaper.description || `Experience the luxury of ${wallpaper.name}. Designed for high-end interiors, this premium wallpaper combines texture and durability.`}</p>
-                                    </div>
-
-                                    {wallpaper.customer_fit?.length > 0 && (
-                                        <div className="story-section">
-                                            <h4 className="story-label">Why Customers Love It (Indian Home Fit)</h4>
-                                            <ul className="story-list">
-                                                {wallpaper.customer_fit.map((item, i) => (
-                                                    <li key={i}>{item}</li>
-                                                ))}
-                                            </ul>
+                                    {/* Description - Hidden on mobile as it's now a tab */}
+                                    {!isMobile && (
+                                        <div className="zara-detail-desc">
+                                            {wallpaper.tagline && <p className="story-tagline">{wallpaper.tagline}</p>}
+                                            <p>{wallpaper.story || wallpaper.description || `Experience the luxury of ${wallpaper.name}. Designed for high-end interiors, this premium wallpaper combines texture and durability.`}</p>
                                         </div>
                                     )}
 
-                                    {wallpaper.mood_tags?.length > 0 && (
-                                        <div className="story-section">
-                                            <h4 className="story-label">Mood</h4>
-                                            <p className="mood-tags-display">
-                                                {wallpaper.mood_tags.join(' • ')}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {wallpaper.ideal_for?.length > 0 && (
-                                        <div className="story-section">
-                                            <h4 className="story-label">Ideal For</h4>
-                                            <ul className="ideal-list">
-                                                {wallpaper.ideal_for.map((item, i) => (
-                                                    <li key={i}>{item}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-
-                                    {wallpaper.whatsapp_line && (
-                                        <div
-                                            className="whatsapp-decision-box"
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(wallpaper.whatsapp_line);
-                                                alert('Decision line copied to clipboard!');
-                                            }}
-                                            title="Click to copy for WhatsApp"
-                                        >
-                                            <div className="whatsapp-header">
-                                                <span role="img" aria-label="brain">🧠</span> 10-Second Decision Line
-                                                <span style={{ marginLeft: 'auto', fontSize: '0.6rem', opacity: 0.5 }}>CLICK TO COPY</span>
+                                    {/* Collapsible / Tabbed Product Fields */}
+                                    <div className="product-info-modular">
+                                        {/* Mobile Tabs Header */}
+                                        {isMobile && (
+                                            <div className="product-tabs-header">
+                                                <button
+                                                    className={`tab-btn ${activeTab === 'info' ? 'active' : ''}`}
+                                                    onClick={() => setActiveTab('info')}
+                                                >
+                                                    INFO
+                                                </button>
+                                                <button
+                                                    className={`tab-btn ${activeTab === 'fit' ? 'active' : ''}`}
+                                                    onClick={() => setActiveTab('fit')}
+                                                >
+                                                    FIT
+                                                </button>
+                                                <button
+                                                    className={`tab-btn ${activeTab === 'mood' ? 'active' : ''}`}
+                                                    onClick={() => setActiveTab('mood')}
+                                                >
+                                                    MOOD
+                                                </button>
+                                                <button
+                                                    className={`tab-btn ${activeTab === 'ideal' ? 'active' : ''}`}
+                                                    onClick={() => setActiveTab('ideal')}
+                                                >
+                                                    IDEAL
+                                                </button>
                                             </div>
-                                            <p className="whatsapp-text">"{wallpaper.whatsapp_line}"</p>
+                                        )}
+
+                                        {/* Content - Accordion on Desktop, Single Tab Content on Mobile */}
+                                        <div className="product-fields-container">
+                                            {/* INFO TAB (Mobile Only) */}
+                                            {isMobile && activeTab === 'info' && (
+                                                <motion.div
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    className="collapsible-content"
+                                                    style={{ display: 'block' }}
+                                                >
+                                                    <div className="zara-detail-desc" style={{ marginBottom: '1rem', padding: 0 }}>
+                                                        {wallpaper.tagline && <p className="story-tagline" style={{ fontSize: '0.8rem', marginBottom: '1rem' }}>{wallpaper.tagline}</p>}
+                                                        <p style={{ fontSize: '0.8rem', lineHeight: '1.6' }}>{wallpaper.story || wallpaper.description || `Experience the luxury of ${wallpaper.name}.`}</p>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                            {/* WHY CUSTOMERS LOVE IT */}
+                                            {(!isMobile || activeTab === 'fit') && (
+                                                <div className={`collapsible-section ${!isMobile && expandedSections.fit ? 'expanded' : ''}`}>
+                                                    {!isMobile && (
+                                                        <div
+                                                            className="collapsible-header"
+                                                            onClick={() => setExpandedSections(prev => ({ ...prev, fit: !prev.fit }))}
+                                                        >
+                                                            <span>WHY CUSTOMERS LOVE IT (INDIAN HOME FIT)</span>
+                                                            {expandedSections.fit ? <Minus size={14} /> : <Plus size={14} />}
+                                                        </div>
+                                                    )}
+                                                    <motion.div
+                                                        initial={isMobile ? { opacity: 0 } : false}
+                                                        animate={{ opacity: 1 }}
+                                                        className="collapsible-content"
+                                                    >
+                                                        {wallpaper.customer_fit?.length > 0 ? (
+                                                            <ul className="story-list">
+                                                                {wallpaper.customer_fit.map((item, i) => (
+                                                                    <li key={i}>{item}</li>
+                                                                ))}
+                                                            </ul>
+                                                        ) : (
+                                                            <p className="no-data-msg">Perfect for premium modern homes and luxury interiors.</p>
+                                                        )}
+                                                    </motion.div>
+                                                </div>
+                                            )}
+
+                                            {/* MOOD */}
+                                            {(!isMobile || activeTab === 'mood') && (
+                                                <div className={`collapsible-section ${!isMobile && expandedSections.mood ? 'expanded' : ''}`}>
+                                                    {!isMobile && (
+                                                        <div
+                                                            className="collapsible-header"
+                                                            onClick={() => setExpandedSections(prev => ({ ...prev, mood: !prev.mood }))}
+                                                        >
+                                                            <span>MOOD</span>
+                                                            {expandedSections.mood ? <Minus size={14} /> : <Plus size={14} />}
+                                                        </div>
+                                                    )}
+                                                    <motion.div
+                                                        initial={isMobile ? { opacity: 0 } : false}
+                                                        animate={{ opacity: 1 }}
+                                                        className="collapsible-content"
+                                                    >
+                                                        {wallpaper.mood_tags?.length > 0 ? (
+                                                            <p className="mood-tags-display">
+                                                                {wallpaper.mood_tags.join(' • ')}
+                                                            </p>
+                                                        ) : (
+                                                            <p className="no-data-msg">Elegant • Minimal • Sophisticated</p>
+                                                        )}
+                                                    </motion.div>
+                                                </div>
+                                            )}
+
+                                            {/* IDEAL FOR */}
+                                            {(!isMobile || activeTab === 'ideal') && (
+                                                <div className={`collapsible-section ${!isMobile && expandedSections.ideal ? 'expanded' : ''}`}>
+                                                    {!isMobile && (
+                                                        <div
+                                                            className="collapsible-header"
+                                                            onClick={() => setExpandedSections(prev => ({ ...prev, ideal: !prev.ideal }))}
+                                                        >
+                                                            <span>IDEAL FOR</span>
+                                                            {expandedSections.ideal ? <Minus size={14} /> : <Plus size={14} />}
+                                                        </div>
+                                                    )}
+                                                    <motion.div
+                                                        initial={isMobile ? { opacity: 0 } : false}
+                                                        animate={{ opacity: 1 }}
+                                                        className="collapsible-content"
+                                                    >
+                                                        {wallpaper.ideal_for?.length > 0 ? (
+                                                            <ul className="ideal-list">
+                                                                {wallpaper.ideal_for.map((item, i) => (
+                                                                    <li key={i}>{item}</li>
+                                                                ))}
+                                                            </ul>
+                                                        ) : (
+                                                            <p className="no-data-msg">Living Room, Feature Wall, Luxury Bedrooms</p>
+                                                        )}
+                                                    </motion.div>
+                                                </div>
+                                            )}
+
+                                            {/* 10-SECOND DECISION LINE */}
+                                            {wallpaper.whatsapp_line && (!isMobile || activeTab === 'tip') && (
+                                                <div className={`collapsible-section ${!isMobile && expandedSections.tip ? 'expanded' : ''}`}>
+                                                    {!isMobile && (
+                                                        <div
+                                                            className="collapsible-header"
+                                                            onClick={() => setExpandedSections(prev => ({ ...prev, tip: !prev.tip }))}
+                                                        >
+                                                            <span>10-SECOND DECISION LINE</span>
+                                                            {expandedSections.tip ? <Minus size={14} /> : <Plus size={14} />}
+                                                        </div>
+                                                    )}
+                                                    <motion.div
+                                                        initial={isMobile ? { opacity: 0 } : false}
+                                                        animate={{ opacity: 1 }}
+                                                        className="collapsible-content"
+                                                    >
+                                                        <div
+                                                            className="whatsapp-decision-box-modular"
+                                                            onClick={() => {
+                                                                navigator.clipboard.writeText(wallpaper.whatsapp_line);
+                                                                alert('Decision line copied to clipboard!');
+                                                            }}
+                                                            title="Click to copy for WhatsApp"
+                                                        >
+                                                            <div className="whatsapp-header">
+                                                                <span role="img" aria-label="brain">🧠</span> CLICK TO COPY
+                                                            </div>
+                                                            <p className="whatsapp-text">"{wallpaper.whatsapp_line}"</p>
+                                                        </div>
+                                                    </motion.div>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
+                                    </div>
 
                                     {/* <div className="zara-detail-meta">
                                         <div className="meta-item">
@@ -590,7 +722,7 @@ const WallpaperDetail = () => {
                                             </div>
                                             <div className="related-info">
                                                 <span className="related-name">{item.name}</span>
-                                                <span className="related-price">₹ {item.price || '4,350.00'}</span>
+                                                {/* <span className="related-price">₹ {item.price || '4,350.00'}</span> */}
                                             </div>
                                         </Link>
                                     ))}
@@ -609,61 +741,11 @@ const WallpaperDetail = () => {
                 </div>
 
                 {/* COLUMN 3: TOOLS PANEL */}
-                <div className="col-tools-panel desktop-only">
-                    {/* Search Section */}
-                    <div className="tool-section">
-                        {/* <h3>SEARCH</h3> */}
-                        <div style={{ position: 'relative', borderBottom: '1px solid #000' }}>
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyDown={handleMobileSearch}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.5rem 0',
-                                    border: 'none',
-                                    backgroundColor: 'transparent',
-                                    fontSize: '0.7rem',
-                                    letterSpacing: '0.1em',
-                                    outline: 'none',
-                                    textTransform: 'uppercase'
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Discovery Section */}
-                    <div className="tool-section">
-                        <h3>DISCOVERY</h3>
-                        <Link to="/try-it-on" className="tool-link">
-                            <Layout size={16} /> TRY IT ON YOUR WALL
-                        </Link>
-                        <Link to="/ai-recommendations" className="tool-link">
-                            <Sparkles size={16} /> AI RECOMMENDATIONS
-                        </Link>
-                    </div>
-
-                    {/* Actions Section */}
-                    <div className="tool-section">
-                        <h3>ACTIONS</h3>
-                        <button onClick={() => setIsEnquiryOpen(true)} className="tool-link" style={{ background: 'none', border: 'none', width: '100%', padding: 0 }}>
-                            ENQUIRE NOW
-                        </button>
-                    </div>
-
-                    {/* User Section */}
-                    <div className="tool-section">
-                        <h3>ACCOUNT</h3>
-                        <div className="user-display">
-                            <User size={16} />
-                            <span className="user-name-label">
-                                {user ? (user.user_metadata?.full_name || user.email.split('@')[0]) : "GUEST"}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <ToolsSidebar
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    handleSearch={handleMobileSearch}
+                />
             </div>
         </div>
     );

@@ -202,7 +202,18 @@ export const editVisualization = async (req, res) => {
 export const getHistory = async (req, res) => {
     const userId = req.user.id;
     try {
-        const { data, error } = await supabase.from('visualizations').select('*, wallpapers(*)').eq('user_id', userId).order('created_at', { ascending: false });
+        const { data, error } = await supabase
+            .from('visualizations')
+            .select(`
+                *,
+                wallpapers (
+                    *,
+                    groups (name),
+                    categories (name)
+                )
+            `)
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
         if (error) throw error;
         res.status(200).json(data);
     } catch (error) {

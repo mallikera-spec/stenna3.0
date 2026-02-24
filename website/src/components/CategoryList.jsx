@@ -10,7 +10,7 @@ const CategoryList = ({ categories, selectedCategoryIds, onToggleCategory }) => 
                     className={`zara-sidebar-item ${selectedCategoryIds.length === 0 ? 'active' : ''}`}
                     onClick={() => onToggleCategory(null)}
                 >
-                    <span className="zara-item-num">|01|</span>
+                    {/* <span className="zara-item-num">|01|</span> */}
                     VIEW ALL
                 </button>
                 {categories.map((category, index) => (
@@ -19,7 +19,7 @@ const CategoryList = ({ categories, selectedCategoryIds, onToggleCategory }) => 
                         className={`zara-sidebar-item ${selectedCategoryIds.includes(category.id) ? 'active' : ''}`}
                         onClick={() => onToggleCategory(category.id)}
                     >
-                        <span className="zara-item-num">|{String(index + 2).padStart(2, '0')}|</span>
+                        {/* <span className="zara-item-num">|{String(index + 2).padStart(2, '0')}|</span> */}
                         {category.name}
                     </button>
                 ))}
